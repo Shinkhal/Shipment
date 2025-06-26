@@ -15,7 +15,7 @@ export const generateShipmentPDF = (shipment) => {
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(...primaryColor);
-  doc.text('QUICKSHIP LOGISTICS', margin, yPos);
+  doc.text('ShipNest', margin, yPos);
   nextLine(10);
   doc.setLineWidth(0.5);
   doc.setDrawColor(...grayColor);
@@ -117,7 +117,7 @@ export const generateShipmentPDF = (shipment) => {
   doc.setTextColor(...grayColor);
   doc.text('This is a computer-generated document.', margin, footerY + 6);
   doc.text(`Generated on: ${formatDateTime(new Date())}`, margin, footerY + 12);
-  doc.text('Customer Service: 1800-QUICKSHIP | support@quickship.com', pageWidth - 130, footerY + 6);
+  doc.text('Customer Service: 1800-ShipNest | support@ShipNest.com', pageWidth - 130, footerY + 6);
 
   const timestamp = new Date().toISOString().split('T')[0];
   doc.save(`Shipment_${shipment.trackingId}_${timestamp}.pdf`);
