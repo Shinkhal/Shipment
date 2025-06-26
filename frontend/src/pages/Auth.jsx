@@ -13,7 +13,6 @@ import {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
-  sendEmailVerification,
   updateProfile,
   fetchSignInMethodsForEmail
 } from 'firebase/auth';
@@ -36,17 +35,9 @@ const AuthPages = () => {
   });
 
   useEffect(() => {
-    // Only navigate to home if user exists and email is verified (or signed in with Google)
+    // Navigate to home if user exists
     if (!authLoading && user) {
-      // Google users don't need email verification
-      const isGoogleUser = user.providerData?.some(provider => provider.providerId === 'google.com') || false;
-      
-      if (isGoogleUser || user.emailVerified) {
-        navigate('/');
-      } else {
-        // User is signed in but email not verified
-        toast.warning("Please verify your email before accessing your account.");
-      }
+      navigate('/');
     }
   }, [user, authLoading, navigate]);
 
@@ -90,7 +81,7 @@ const AuthPages = () => {
       }
 
       toast.success("Google sign-in successful!");
-      // Navigation will be handled by useEffect since Google users don't need email verification
+      // Navigation will be handled by useEffect
     } catch (error) {
       if (error.code === 'auth/account-exists-with-different-credential') {
         toast.error("Account exists with different sign-in method.");
@@ -100,18 +91,6 @@ const AuthPages = () => {
       }
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleResendVerification = async () => {
-    if (user && !user.emailVerified) {
-      try {
-        await sendEmailVerification(user);
-        toast.success("Verification email sent! Please check your inbox.");
-      } catch (error) {
-        console.error('Resend verification error:', error);
-        toast.error("Failed to send verification email. Please try again.");
-      }
     }
   };
 
@@ -141,17 +120,9 @@ const AuthPages = () => {
           return;
         }
         
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        
-        // Check if email is verified
-        if (!userCredential.user.emailVerified) {
-          toast.warning("Please verify your email before accessing your account.");
-          // Don't navigate to home - let useEffect handle this
-        } else {
-          toast.success("Login successful!");
-          navigate('/')
-          // Navigation will be handled by useEffect
-        }
+        await signInWithEmailAndPassword(auth, email, password);
+        toast.success("Login successful!");
+        // Navigation will be handled by useEffect
       } else {
         if (methods.length > 0) {
           toast.error("This email is already registered with another method.");
@@ -161,7 +132,6 @@ const AuthPages = () => {
 
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(userCred.user, { displayName: name });
-        await sendEmailVerification(userCred.user);
 
         await setDoc(doc(db, 'users', userCred.user.uid), {
           uid: userCred.user.uid,
@@ -171,9 +141,8 @@ const AuthPages = () => {
           createdAt: new Date().toISOString()
         });
 
-        toast.success("Account created! Please verify your email before signing in.");
-        setIsLogin(true);
-        setFormData({ name: "", email: "", phone: "", password: "" });
+        toast.success("Account created successfully!");
+        // Navigation will be handled by useEffect
       }
     } catch (err) {
       console.error(err);
@@ -197,21 +166,6 @@ const AuthPages = () => {
         <h2 className="text-center text-2xl font-bold text-gray-700">
           {isLogin ? 'Welcome Back!' : 'Create an Account'}
         </h2>
-
-        {/* Email verification notice */}
-        {user && !user.emailVerified && !(user.providerData?.some(provider => provider.providerId === 'google.com')) && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-            <p className="text-yellow-800 text-sm mb-2">
-              Please verify your email address to access your account.
-            </p>
-            <button
-              onClick={handleResendVerification}
-              className="text-sm text-yellow-700 hover:text-yellow-900 underline font-medium"
-            >
-              Resend verification email
-            </button>
-          </div>
-        )}
 
         <div className="space-y-4">
           {!isLogin && (

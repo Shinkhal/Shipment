@@ -37,7 +37,7 @@ const Footer = () => {
               <Truck className="w-5 h-5 text-white" />
             </div>
             <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              ShipFast
+              ShipNest
             </span>
           </div>
 
@@ -74,14 +74,14 @@ const Footer = () => {
               })}
             </div>
             <div className="text-sm text-gray-500 hidden sm:block">
-              © {currentYear} ShipFast
+              © {currentYear} ShipNest
             </div>
           </div>
         </div>
         
         {/* Mobile Copyright */}
         <div className="text-center text-sm text-gray-500 mt-4 sm:hidden">
-          © {currentYear} ShipFast. All rights reserved.
+          © {currentYear} ShipNest. All rights reserved.
         </div>
       </div>
     </footer>

@@ -187,7 +187,7 @@ const Home = () => {
       {/* Hero Section */}
       <header className="text-center py-16 px-6">
         <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-          ShipFast
+          ShipNest
         </h1>
         <p className="text-lg md:text-xl max-w-xl mx-auto text-gray-600">
           Send packages anywhere, anytime. Track your shipments in real-time and enjoy hassle-free delivery.
@@ -211,7 +211,7 @@ const Home = () => {
 
       {/* Features */}
       <section className="py-12 px-6 bg-white">
-        <h2 className="text-3xl font-semibold text-center mb-10">Why Choose ShipFast</h2>
+        <h2 className="text-3xl font-semibold text-center mb-10">Why Choose ShipNest</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
             <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center mb-4">
@@ -271,7 +271,7 @@ const Home = () => {
       <section className="py-16 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center">
         <h2 className="text-3xl font-bold mb-4">Ready to Send Your First Package?</h2>
         <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
-          Join thousands of customers who trust ShipFast for their shipping needs. 
+          Join thousands of customers who trust ShipNest for their shipping needs. 
           Fast, reliable, and affordable shipping solutions.
         </p>
         <Link
