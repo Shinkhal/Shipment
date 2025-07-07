@@ -79,10 +79,10 @@ const Navbar = () => {
             className="flex items-center cursor-pointer hover:scale-105 transition-transform"
             onClick={() => navigate('/')}
           >
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-r from-slate-600 to-slate-700 rounded-xl flex items-center justify-center mr-3 shadow-lg">
               <Truck className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent">
               ShipNest
             </span>
           </div>
@@ -97,8 +97,8 @@ const Navbar = () => {
                   className={clsx(
                     'flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                     isActive(path)
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105'
-                      : 'text-gray-700 hover:bg-gray-100 hover:text-purple-600 hover:scale-105'
+                      ? 'bg-gradient-to-r from-slate-500 to-slate-600 text-white shadow-lg scale-105'
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-slate-600 hover:scale-105'
                   )}
                 >
                   <Icon className="w-4 h-4 mr-2" />
@@ -120,7 +120,7 @@ const Navbar = () => {
                     aria-haspopup="true"
                     aria-expanded={isProfileOpen}
                   >
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                    <div className="w-8 h-8 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
                       {getInitials(user?.name)}
                     </div>
                     <span className="hidden md:block text-sm font-medium text-gray-700">{user?.name || 'User'}</span>
@@ -159,7 +159,7 @@ const Navbar = () => {
                 {/* Mobile Menu Toggle */}
                 <button
                   onClick={() => setIsMenuOpen((prev) => !prev)}
-                  className="lg:hidden p-2 text-gray-600 hover:text-purple-600 hover:bg-gray-100 rounded-lg"
+                  className="lg:hidden p-2 text-gray-600 hover:text-slate-600 hover:bg-gray-100 rounded-lg"
                   aria-label="Toggle menu"
                 >
                   {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -169,13 +169,13 @@ const Navbar = () => {
               <div className="flex space-x-2">
                 <button
                   onClick={() => navigate('/auth')}
-                  className="px-4 py-2 text-sm font-medium text-purple-600 hover:text-purple-700"
+                  className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-700"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => navigate('/auth')}
-                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-slate-500 to-slate-600 rounded-lg hover:from-slate-600 hover:to-slate-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   Get Started
                 </button>
@@ -203,7 +203,7 @@ const Navbar = () => {
                   className={clsx(
                     'w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg',
                     isActive(path)
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                      ? 'bg-gradient-to-r from-slate-500 to-slate-600 text-white'
                       : 'text-gray-700 hover:bg-gray-100'
                   )}
                 >
