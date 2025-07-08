@@ -1,6 +1,7 @@
 import { db } from "../config/firebase.js";
+import { sendEmail} from "../utils/EmailSender.js";
 
-// Generate unique tracking ID
+//Generate unique tracking ID
 const generateTrackingId = () => {
   const prefix = "SP";
   const timestamp = Date.now().toString().slice(-6);
@@ -27,6 +28,135 @@ const calculateEstimatedDelivery = (serviceType, pickupDate) => {
 
   return deliveryDate;
 };
+
+// Email helper functions
+const sendShipmentCreatedEmail = async (shipment) => {
+  const { sender, receiver, trackingId, estimatedDelivery, service, package: pkg } = shipment;
+
+  const htmlTemplate = (recipient, role) => `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc;">
+      <h2 style="color: #2c3e50;">${role === 'sender' ? 'Shipment Created' : 'Incoming Shipment'}</h2>
+      <p>Dear <strong>${recipient.name}</strong>,</p>
+      <p>${role === 'sender' ? 'Your shipment has been successfully created. Here are the details:' : 'A shipment is on its way to you. Below are the details:'}</p>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px;"><strong>Tracking ID:</strong></td><td>${trackingId}</td></tr>
+        <tr><td style="padding: 8px;"><strong>Service Type:</strong></td><td>${service?.type || 'Standard'}</td></tr>
+        <tr><td style="padding: 8px;"><strong>Package:</strong></td><td>${pkg?.description}</td></tr>
+        <tr><td style="padding: 8px;"><strong>Weight:</strong></td><td>${pkg?.weight} kg</td></tr>
+        ${role === 'sender' ? `<tr><td style="padding: 8px;"><strong>Receiver:</strong></td><td>${receiver?.name}</td></tr>` : `<tr><td style="padding: 8px;"><strong>Sender:</strong></td><td>${sender?.name}</td></tr>`}
+        <tr><td style="padding: 8px;"><strong>Estimated Delivery:</strong></td><td>${new Date(estimatedDelivery).toDateString()}</td></tr>
+      </table>
+      <p style="margin-top: 20px;">Track your shipment anytime using the tracking ID: <strong>${trackingId}</strong>.</p>
+      <p style="margin-top: 10px;">Thank you for using ShipNest!</p>
+    </div>
+  `;
+
+  const plainText = (recipient, role) => 
+`Dear ${recipient.name},
+
+${role === 'sender' ? 'Your shipment has been successfully created.' : 'A shipment is on the way to you.'}
+
+Tracking ID: ${trackingId}
+Service Type: ${service?.type || 'Standard'}
+Package: ${pkg?.description}
+Weight: ${pkg?.weight} kg
+${role === 'sender' ? 'Receiver' : 'Sender'}: ${role === 'sender' ? receiver?.name : sender?.name}
+Estimated Delivery: ${new Date(estimatedDelivery).toDateString()}
+
+Track using Tracking ID: ${trackingId}
+
+Thank you,
+ShipNest
+`;
+
+  if (sender.email) {
+    try {
+      await sendEmail({
+        to: sender.email,
+        subject: `✅ Shipment Created - Tracking ID: ${trackingId}`,
+        html: htmlTemplate(sender, 'sender'),
+        text: plainText(sender, 'sender')
+      });
+    } catch (error) {
+      console.error('Error sending email to sender:', error);
+    }
+  }
+
+  if (receiver.email) {
+    try {
+      await sendEmail({
+        to: receiver.email,
+        subject: `📦 You Have an Incoming Shipment - Tracking ID: ${trackingId}`,
+        html: htmlTemplate(receiver, 'receiver'),
+        text: plainText(receiver, 'receiver')
+      });
+    } catch (error) {
+      console.error('Error sending email to receiver:', error);
+    }
+  }
+};
+
+
+const sendCancellationEmail = async (shipment) => {
+  const { sender, receiver, trackingId, package: pkg } = shipment;
+
+  const htmlTemplate = (recipient, role) => `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc;">
+      <h2 style="color: #c0392b;">Shipment Cancelled</h2>
+      <p>Dear <strong>${recipient.name}</strong>,</p>
+      <p>The shipment ${role === 'sender' ? 'you created' : 'intended for you'} has been cancelled. Details below:</p>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px;"><strong>Tracking ID:</strong></td><td>${trackingId}</td></tr>
+        <tr><td style="padding: 8px;"><strong>Package:</strong></td><td>${pkg?.description}</td></tr>
+        <tr><td style="padding: 8px;"><strong>${role === 'sender' ? 'Receiver' : 'Sender'}:</strong></td><td>${role === 'sender' ? receiver?.name : sender?.name}</td></tr>
+      </table>
+      <p style="margin-top: 20px;">For questions, please contact our support team.</p>
+      <p style="margin-top: 10px;">Thank you for using ShipNest.</p>
+    </div>
+  `;
+
+  const plainText = (recipient, role) =>
+`Dear ${recipient.name},
+
+The shipment ${role === 'sender' ? 'you created' : 'intended for you'} has been cancelled.
+
+Tracking ID: ${trackingId}
+Package: ${pkg?.description}
+${role === 'sender' ? 'Receiver' : 'Sender'}: ${role === 'sender' ? receiver?.name : sender?.name}
+
+If you have any questions, please contact our support.
+
+Thank you,
+ShipNest
+`;
+
+  if (sender.email) {
+    try {
+      await sendEmail({
+        to: sender.email,
+        subject: `❌ Shipment Cancelled - Tracking ID: ${trackingId}`,
+        html: htmlTemplate(sender, 'sender'),
+        text: plainText(sender, 'sender')
+      });
+    } catch (error) {
+      console.error('Error sending cancellation email to sender:', error);
+    }
+  }
+
+  if (receiver.email) {
+    try {
+      await sendEmail({
+        to: receiver.email,
+        subject: `⚠️ Shipment Cancelled - Tracking ID: ${trackingId}`,
+        html: htmlTemplate(receiver, 'receiver'),
+        text: plainText(receiver, 'receiver')
+      });
+    } catch (error) {
+      console.error('Error sending cancellation email to receiver:', error);
+    }
+  }
+};
+
 
 // ✅ Create Shipment
 export const createShipment = async (req, res) => {
@@ -111,6 +241,10 @@ export const createShipment = async (req, res) => {
     };
 
     const docRef = await db.collection("shipments").add(shipment);
+    
+    // Send email notifications
+    await sendShipmentCreatedEmail(shipment);
+    
     res.status(201).json({ id: docRef.id, trackingId, ...shipment });
 
   } catch (error) {
@@ -290,6 +424,10 @@ export const cancelShipment = async (req, res) => {
     };
 
     await docRef.update(updatedData);
+
+    // Send cancellation email
+    const cancelledShipment = { ...data, ...updatedData };
+    await sendCancellationEmail(cancelledShipment);
 
     res.status(200).json({ message: 'Shipment cancelled successfully' });
 
