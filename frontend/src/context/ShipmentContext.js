@@ -6,12 +6,10 @@ export const ShipmentProvider = ({ children }) => {
   const [shipments, setShipments] = useState([]);
   const [selectedShipment, setSelectedShipment] = useState(null);
 
-  // Add a new shipment
   const addShipment = (shipment) => {
     setShipments((prev) => [...prev, shipment]);
   };
 
-  // Update shipment status by ID
   const updateShipmentStatus = (id, newStatus) => {
     setShipments((prev) =>
       prev.map((shipment) =>
@@ -20,12 +18,10 @@ export const ShipmentProvider = ({ children }) => {
     );
   };
 
-  // Delete shipment by ID
   const deleteShipment = (id) => {
     setShipments((prev) => prev.filter((shipment) => shipment.id !== id));
   };
 
-  // Edit shipment by ID (update any field)
   const editShipment = (id, updatedFields) => {
     setShipments((prev) =>
       prev.map((shipment) =>
@@ -34,7 +30,6 @@ export const ShipmentProvider = ({ children }) => {
     );
   };
 
-  // Get shipment by ID
   const getShipmentById = (id) => {
     return shipments.find((shipment) => shipment.id === id);
   };
@@ -43,6 +38,7 @@ export const ShipmentProvider = ({ children }) => {
     <ShipmentContext.Provider
       value={{
         shipments,
+        setShipments,           // ✅ Expose this so we can use it directly in components
         addShipment,
         selectedShipment,
         setSelectedShipment,
