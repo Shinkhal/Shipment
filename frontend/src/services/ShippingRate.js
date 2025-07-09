@@ -306,44 +306,36 @@ const getDistanceMultiplier = (pickupPin, deliveryPin) => {
   const p1 = pickupPin.slice(0, 3);
   const p2 = deliveryPin.slice(0, 3);
 
-  // Same city/local
   if (p1 === p2) return RATE_CONFIG.distanceMultipliers.local;
 
-  // Metro to metro
   if (RATE_CONFIG.pincodeClassification.metros.includes(p1) && 
       RATE_CONFIG.pincodeClassification.metros.includes(p2)) {
     return RATE_CONFIG.distanceMultipliers.metro;
   }
 
-  // Northeast regions
   if (RATE_CONFIG.pincodeClassification.northeast.includes(p1) || 
       RATE_CONFIG.pincodeClassification.northeast.includes(p2)) {
     return RATE_CONFIG.distanceMultipliers.northeast;
   }
 
-  // Hill stations
   if (RATE_CONFIG.pincodeClassification.hillStations.includes(p1) || 
       RATE_CONFIG.pincodeClassification.hillStations.includes(p2)) {
     return RATE_CONFIG.distanceMultipliers.hillStation;
   }
 
-  // Remote areas
   if (RATE_CONFIG.pincodeClassification.remote.includes(p1) || 
       RATE_CONFIG.pincodeClassification.remote.includes(p2)) {
     return RATE_CONFIG.distanceMultipliers.remote;
   }
 
-  // Same state/regional
   if (Math.floor(parseInt(p1) / 10) === Math.floor(parseInt(p2) / 10)) {
     return RATE_CONFIG.distanceMultipliers.regional;
   }
 
-  // Same zone
   if (Math.floor(parseInt(p1) / 100) === Math.floor(parseInt(p2) / 100)) {
     return RATE_CONFIG.distanceMultipliers.zonal;
   }
 
-  // National
   return RATE_CONFIG.distanceMultipliers.national;
 };
 
@@ -377,7 +369,6 @@ const calculateDeliveryDate = (transitDays, options = {}) => {
   let deliveryDate = new Date(today);
   
   if (transitDays === '0') {
-    // Same day delivery
     return today.toISOString().split('T')[0];
   }
   
@@ -387,7 +378,6 @@ const calculateDeliveryDate = (transitDays, options = {}) => {
   
   deliveryDate.setDate(today.getDate() + days);
   
-  // Skip weekends unless weekend delivery is opted
   if (!options.weekendDelivery) {
     while (deliveryDate.getDay() === 0 || deliveryDate.getDay() === 6) {
       deliveryDate.setDate(deliveryDate.getDate() + 1);
@@ -402,7 +392,6 @@ const checkServiceAvailability = (pickupPin, deliveryPin, serviceType) => {
   const serviceConfig = RATE_CONFIG.services[serviceType];
   if (!serviceConfig) return { available: false, reason: 'Invalid service type' };
 
-  // Same day delivery restrictions
   if (serviceType === 'SameDay') {
     const p1 = pickupPin?.slice(0, 3);
     const p2 = deliveryPin?.slice(0, 3);

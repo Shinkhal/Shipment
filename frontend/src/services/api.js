@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000/api/shipments';
+const backendurl = process.env.REACT_APP_BACKEND_URL;
+
+const BASE_URL = `${backendurl}/shipments`;
 
 // 🔐 Auth header helper
 const authHeader = (token) => ({
@@ -26,3 +28,10 @@ export const getShipmentHistory = async (filters, token) => {
 // 4️⃣ Track by tracking ID (public)
 export const getShipmentByTrackingId = async (trackingId) =>
   axios.get(`${BASE_URL}/tracking/${trackingId}`);
+
+// 5️⃣ Cancel a shipment
+export const cancelShipment = async (shipmentId, token) =>
+  axios.put(`${BASE_URL}/${shipmentId}/cancel`, {}, authHeader(token));
+
+export const refundShipment = async (shipmentId, token) =>
+  axios.post(`${backendurl}/payment/refund/${shipmentId}`, {}, authHeader(token));
