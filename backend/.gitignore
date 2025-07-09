@@ -1,0 +1,5 @@
+node_modules
+.env
+
+config/firebaseKey.json
+config/firebaseKey.b64.txt
