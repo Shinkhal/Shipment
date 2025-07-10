@@ -1,8 +1,11 @@
-
 # 🚚 ShipNest - Shipment Delivery Application
 
-**Live Link:** [https://shipnest.vercel.app/](https://shipnest.vercel.app/)  
-**GitHub Repository:** [github.com/Shinkhal/Shipment](https://github.com/Shinkhal/Shipment)
+[![Live Deployment](https://img.shields.io/badge/Live%20App-shipnest.vercel.app-brightgreen?style=for-the-badge)](https://shipnest.vercel.app/)
+[![Tech Stack](https://img.shields.io/badge/Stack-React%2C%20Node.js%2C%20Firebase-blueviolet?style=for-the-badge)](#tech-stack)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#license)
+[![Made with ❤️](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red?style=for-the-badge)](#created-by)
+
+**Live Link:** [https://shipnest.vercel.app/](https://shipnest.vercel.app/)
 
 ShipNest is a comprehensive shipment delivery and tracking platform built for both users and admins. It offers seamless shipment creation, real-time tracking, admin-level analytics, and automated email notifications — all wrapped in a modern and responsive UI.
 
@@ -76,9 +79,7 @@ ShipNest is a comprehensive shipment delivery and tracking platform built for bo
 
 | Dashboard | All Shipments | User Homepage | History |
 |----------|---------------|---------------|---------|
-| ![Dashboard](./screenshots/dashboard.png) | ![Shipments](./screenshots/shipments.png) | ![Home](./screenshots/user-home.png) | ![History](./screenshots/history.png) |
-
-> *All images are stored under `/screenshots` directory in the repo.*
+| ![image](https://github.com/user-attachments/assets/13e90622-3608-46fb-8ea9-f5a5f46a1332) | ![image](https://github.com/user-attachments/assets/4e4e0fa0-2d0a-479f-997a-0b1c3e984e1e) | ![image](https://github.com/user-attachments/assets/e0aa793f-922a-4385-b305-ac7972c37dab) | ![image](https://github.com/user-attachments/assets/1ec9c741-a3b6-46ed-8ccf-7e6d32dafbe2) |
 
 ---
 
@@ -132,16 +133,15 @@ EMAIL_PASS=
 
 ---
 
-## 👨‍💻 Developed By
+## 🧑‍💻 Created By
 
-**Shinkhal Sinha**
+**Created with ❤️ by [Shinkhal Sinha](https://shinkhal-sinha.online)**
 Full Stack Developer | UI/UX Designer
-[Portfolio](https://shinkhal-sinha.online) | [LinkedIn](https://linkedin.com/in/shinkhal)
 
 ---
 
 ## 📄 License
 
-This project is for educational and demo purposes. Commercial use is prohibited without permission.
+This project is licensed under the [MIT License](LICENSE) — feel free to fork, clone, and use it for educational purposes.
 
 
