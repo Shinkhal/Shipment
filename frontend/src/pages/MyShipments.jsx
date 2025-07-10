@@ -14,49 +14,51 @@ const ActiveShipments = () => {
   const navigate = useNavigate();
 
   const statusConfig = {
-    Pending: { 
-      bg: 'bg-gradient-to-r from-orange-50 to-yellow-50', 
-      text: 'text-orange-700', 
-      icon: '⏳', 
-      badge: 'bg-orange-100 text-orange-700 border-orange-200',
-      progress: 'bg-orange-200',
-      progressFill: 'bg-orange-500'
-    },
-    Processing: { 
-      bg: 'bg-gradient-to-r from-blue-50 to-indigo-50', 
-      text: 'text-blue-700', 
-      icon: '⚙️', 
-      badge: 'bg-blue-100 text-blue-700 border-blue-200',
-      progress: 'bg-blue-200',
-      progressFill: 'bg-blue-500'
-    },
-    Shipped: { 
-      bg: 'bg-gradient-to-r from-purple-50 to-pink-50', 
-      text: 'text-purple-700', 
-      icon: '📦', 
-      badge: 'bg-purple-100 text-purple-700 border-purple-200',
-      progress: 'bg-purple-200',
-      progressFill: 'bg-purple-500'
-    },
-    in_transit: { 
-      bg: 'bg-gradient-to-r from-green-50 to-emerald-50', 
-      text: 'text-green-700', 
-      icon: '🚚', 
-      badge: 'bg-green-100 text-green-700 border-green-200',
-      progress: 'bg-green-200',
-      progressFill: 'bg-green-500'
-    }
-  };
+  pending: { 
+    bg: 'bg-gradient-to-r from-orange-50 to-yellow-50', 
+    text: 'text-orange-700', 
+    icon: '⏳', 
+    badge: 'bg-orange-100 text-orange-700 border-orange-200',
+    progress: 'bg-orange-200',
+    progressFill: 'bg-orange-500'
+  },
+  processing: { 
+    bg: 'bg-gradient-to-r from-blue-50 to-indigo-50', 
+    text: 'text-blue-700', 
+    icon: '⚙️', 
+    badge: 'bg-blue-100 text-blue-700 border-blue-200',
+    progress: 'bg-blue-200',
+    progressFill: 'bg-blue-500'
+  },
+  shipped: { 
+    bg: 'bg-gradient-to-r from-purple-50 to-pink-50', 
+    text: 'text-purple-700', 
+    icon: '📦', 
+    badge: 'bg-purple-100 text-purple-700 border-purple-200',
+    progress: 'bg-purple-200',
+    progressFill: 'bg-purple-500'
+  },
+  in_transit: { 
+    bg: 'bg-gradient-to-r from-green-50 to-emerald-50', 
+    text: 'text-green-700', 
+    icon: '🚚', 
+    badge: 'bg-green-100 text-green-700 border-green-200',
+    progress: 'bg-green-200',
+    progressFill: 'bg-green-500'
+  }
+};
 
-  const getProgressPercentage = (status) => {
-    const progressMap = {
-      pending: 25,
-      processing: 50,
-      shipped: 75,
-      in_transit: 90
-    };
-    return progressMap[status] || 0;
+const getProgressPercentage = (status) => {
+  const progressMap = {
+    pending: 25,
+    processing: 50,
+    shipped: 75,
+    in_transit: 90
   };
+  const key = status?.toLowerCase().replace(/\s+/g, '_');
+  return progressMap[key] || 0;
+};
+
 
   useEffect(() => {
     const fetchActiveShipments = async () => {
@@ -198,8 +200,11 @@ const ActiveShipments = () => {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {shipments.map((shipment) => {
               const daysUntilDelivery = getDaysUntilDelivery(shipment.estimatedDelivery);
-              const statusStyle = statusConfig[shipment.status] || statusConfig.pending;
-              const progress = getProgressPercentage(shipment.status);
+              const rawStatus = shipment.status || 'pending';
+const statusKey = rawStatus.toLowerCase().replace(/\s+/g, '_');
+const statusStyle = statusConfig[statusKey] || statusConfig['pending'];
+const progress = getProgressPercentage(rawStatus);
+
               
               return (
                 <div key={shipment.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden group">
