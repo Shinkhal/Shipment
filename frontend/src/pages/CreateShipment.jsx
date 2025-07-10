@@ -10,6 +10,8 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import AddressSection from '../components/AddressSection'; // adjust path if needed
+
 
 const CreateShipment = () => {
   const { user, loading: authLoading } = useAuth();
@@ -258,103 +260,28 @@ const CreateShipment = () => {
 
             {/* Addresses */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t pt-8">
-              {/* Pickup Address */}
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 mb-4">
-                  <MapPin className="w-6 h-6 text-purple-600" />
-                  <h3 className="text-xl font-semibold text-gray-900">Pickup Address</h3>
-                </div>
-                
-                <div className="space-y-4">
-                  <textarea
-                    value={formData.pickup.address}
-                    onChange={(e) => handleInputChange('pickup', 'address', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Complete address *"
-                    rows="2"
-                    required
-                  />
-                  
-                  <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      value={formData.pickup.city}
-                      onChange={(e) => handleInputChange('pickup', 'city', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="City *"
-                      required
-                    />
-                    
-                    <input
-                      type="text"
-                      value={formData.pickup.state}
-                      onChange={(e) => handleInputChange('pickup', 'state', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="State *"
-                      required
-                    />
-                  </div>
-                  
-                  <input
-                    type="text"
-                    value={formData.pickup.pincode}
-                    onChange={(e) => handleInputChange('pickup', 'pincode', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="PIN Code *"
-                    maxLength="6"
-                    required
-                  />
-                </div>
-              </div>
+              {/* Pickup Address Section */}
+<AddressSection
+  title="Pickup Address"
+  icon={MapPin}
+  iconColor="text-purple-600"
+  addressData={formData.pickup}
+  onAddressChange={(field, value) =>
+    handleInputChange('pickup', field, value)
+  }
+/>
 
-              {/* Delivery Address */}
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 mb-4">
-                  <MapPin className="w-6 h-6 text-green-600" />
-                  <h3 className="text-xl font-semibold text-gray-900">Delivery Address</h3>
-                </div>
-                
-                <div className="space-y-4">
-                  <textarea
-                    value={formData.delivery.address}
-                    onChange={(e) => handleInputChange('delivery', 'address', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Complete address *"
-                    rows="2"
-                    required
-                  />
-                  
-                  <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      value={formData.delivery.city}
-                      onChange={(e) => handleInputChange('delivery', 'city', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="City *"
-                      required
-                    />
-                    
-                    <input
-                      type="text"
-                      value={formData.delivery.state}
-                      onChange={(e) => handleInputChange('delivery', 'state', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="State *"
-                      required
-                    />
-                  </div>
-                  
-                  <input
-                    type="text"
-                    value={formData.delivery.pincode}
-                    onChange={(e) => handleInputChange('delivery', 'pincode', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="PIN Code *"
-                    maxLength="6"
-                    required
-                  />
-                </div>
-              </div>
+{/* Delivery Address Section */}
+<AddressSection
+  title="Delivery Address"
+  icon={MapPin}
+  iconColor="text-green-600"
+  addressData={formData.delivery}
+  onAddressChange={(field, value) =>
+    handleInputChange('delivery', field, value)
+  }
+/>
+
             </div>
 
             {/* Package & Service */}

@@ -22,17 +22,13 @@ const ShipmentHistory = () => {
 
   // Status colors matching backend status values
   const statusColors = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    processing: 'bg-blue-100 text-blue-800',
-    shipped: 'bg-purple-100 text-purple-800',
-    in_transit: 'bg-indigo-100 text-indigo-800'
-  };
-
-  const statusIcons = {
-    pending: '⏳',
-    processing: '⚙️',
-    shipped: '📦',
-    in_transit: '🚚'
+    'Pending': 'bg-yellow-100 text-yellow-800',
+    'Processing': 'bg-blue-100 text-blue-800',
+    'Shipped': 'bg-purple-100 text-purple-800',
+    'In Transit': 'bg-indigo-100 text-indigo-800',
+    'Delivered': 'bg-green-100 text-green-800',
+    'Cancelled': 'bg-red-100 text-red-800',
+    'Returned': 'bg-gray-100 text-gray-800'
   };
 
   const fetchHistory = async (currentFilters = filters) => {
@@ -48,8 +44,12 @@ const ShipmentHistory = () => {
       // Create filters object with only non-empty values
       const cleanFilters = {};
       Object.entries(currentFilters).forEach(([key, value]) => {
-        if (value) cleanFilters[key] = value;
+        if (value !== '' && value !== null && value !== undefined) {
+          cleanFilters[key] = value;
+        }
       });
+
+      console.log('Sending filters:', cleanFilters); // Debug log
 
       const response = await getShipmentHistory(cleanFilters, token);
 
@@ -88,12 +88,23 @@ const ShipmentHistory = () => {
   useEffect(() => {
     if (authLoading || !user) return;
     fetchHistory();
-  }, [authLoading, user, filters.page]);
+  }, [authLoading, user]);
+
+  // Separate useEffect for page changes
+  useEffect(() => {
+    if (authLoading || !user) return;
+    if (filters.page > 1) {
+      fetchHistory();
+    }
+  }, [filters.page]);
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value, page: 1 };
     setFilters(newFilters);
-    fetchHistory(newFilters);
+    // Debounce the API call for better UX
+    setTimeout(() => {
+      fetchHistory(newFilters);
+    }, 300);
   };
 
   const handlePageChange = (newPage) => {
@@ -210,12 +221,13 @@ const ShipmentHistory = () => {
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Statuses</option>
-                <option value="Pending">Pending</option>
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
-                <option value="In Transit">In Transit</option>
-                <option value="Delivered">Delivered</option>
-
+              <option value="Pending">Pending</option>
+              <option value="Processing">Processing</option>
+              <option value="Shipped">Shipped</option>
+              <option value="In Transit">In Transit</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Returned">Returned</option>
             </select>
           </div>
           
@@ -250,6 +262,30 @@ const ShipmentHistory = () => {
         </div>
       </div>
 
+      {/* Active Filters Display */}
+      {(filters.status || filters.dateFrom || filters.dateTo) && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-blue-800 font-medium">Active Filters:</span>
+            {filters.status && (
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                Status: {filters.status}
+              </span>
+            )}
+            {filters.dateFrom && (
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                From: {new Date(filters.dateFrom).toLocaleDateString()}
+              </span>
+            )}
+            {filters.dateTo && (
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                To: {new Date(filters.dateTo).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Error Display */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -267,7 +303,7 @@ const ShipmentHistory = () => {
       )}
 
       {/* Loading Indicator */}
-      {loading && history.length === 0 && (
+      {loading && (
         <div className="flex justify-center items-center min-h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-600"></div>
           <span className="ml-3 text-gray-600">Loading shipment history...</span>
@@ -281,8 +317,8 @@ const ShipmentHistory = () => {
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No History Found</h3>
           <p className="text-gray-600">
             {filters.status || filters.dateFrom || filters.dateTo 
-              ? 'No completed shipments match your filters.' 
-              : 'You haven\'t completed any shipments yet.'}
+              ? 'No shipments match your current filters.' 
+              : 'You haven\'t created any shipments yet.'}
           </p>
           {(filters.status || filters.dateFrom || filters.dateTo) && (
             <button
@@ -328,6 +364,9 @@ const ShipmentHistory = () => {
                     <tr key={shipment.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            #{shipment.id?.slice(-8) || 'N/A'}
+                          </div>
                           <div className="text-sm text-gray-500">
                             Tracking: {shipment.trackingId || 'N/A'}
                           </div>
@@ -348,16 +387,19 @@ const ShipmentHistory = () => {
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           statusColors[shipment.status] || 'bg-gray-100 text-gray-800'
                         }`}>
-                          {statusIcons[shipment.status] || '📦'} {shipment.status || 'Unknown'}
+                           {shipment.status || 'Unknown'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div>
                           <div>Weight: {shipment.package?.weight ? `${shipment.package.weight} kg` : 'N/A'}</div>
                           <div className="text-xs text-gray-500">
-                            {shipment.package?.description ? shipment.package.description.substring(0, 30) + '...' : 'No description'}
+                            {shipment.package?.description ? 
+                              (shipment.package.description.length > 30 ? 
+                                shipment.package.description.substring(0, 30) + '...' : 
+                                shipment.package.description) : 
+                              'No description'}
                           </div>
-                          
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -373,25 +415,15 @@ const ShipmentHistory = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <button 
-  className="text-blue-600 hover:text-blue-900 mr-3"
-  onClick={() => {
-    setSelectedShipment(shipment);
-    navigate('/details');
-  }}
->
-  View Details
-</button>
-
-                        <button 
-                          className="text-gray-600 hover:text-gray-900"
+                          className="text-blue-600 hover:text-blue-900 mr-3"
                           onClick={() => {
-                            // Add your download receipt logic here
-                            console.log('Download receipt for:', shipment.id);
-                            // You can implement PDF generation or redirect to receipt endpoint
+                            setSelectedShipment(shipment);
+                            navigate('/details');
                           }}
                         >
-                          Receipt
+                          View Details
                         </button>
+                        
                       </td>
                     </tr>
                   ))}

@@ -28,7 +28,7 @@ const ConfirmShipment = () => {
     }
 
     calculateRate();
-  }, [formData, navigate]);
+  }, [formData, navigate,]);
 
   const calculateRate = async () => {
     try {
