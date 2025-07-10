@@ -17,7 +17,7 @@ const AllShipments = () => {
 
 
   useEffect(() => {
-      const fetchShipments = async () => {
+  const fetchShipments = async () => {
     try {
       const res = await fetchAllShipments();
       setShipments(res.data.shipments);
@@ -28,8 +28,9 @@ const AllShipments = () => {
       setLoading(false);
     }
   };
-    fetchShipments();
-  },);
+  fetchShipments();
+}, []); // ✅ Only once on mount
+
 
   const getStatusColor = (status) => {
     const colors = {
