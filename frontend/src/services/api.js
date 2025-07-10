@@ -35,3 +35,28 @@ export const cancelShipment = async (shipmentId, token) =>
 
 export const refundShipment = async (shipmentId, token) =>
   axios.post(`${backendurl}/payment/refund/${shipmentId}`, {}, authHeader(token));
+
+
+
+// 6️⃣ Create Razorpay Order
+export const createRazorpayOrder = async (amount, userId, token) =>
+  axios.post(
+    `${backendurl}/payment/create-order`,
+    { amount, userId },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+
+// 7️⃣ Verify Razorpay payment
+export const verifyRazorpayPayment = async (paymentDetails, token) =>
+  axios.post(`${backendurl}/payment/verify`, paymentDetails, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });

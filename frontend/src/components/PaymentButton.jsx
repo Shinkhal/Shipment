@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { createShipment } from '../services/api';
 import { toast } from 'react-toastify';
 import { loadRazorpayScript } from '../services/razorpay';
-import axios from 'axios';
+import { createRazorpayOrder, verifyRazorpayPayment } from '../services/api';
 
 const PaymentButton = ({ rateData, formData, disabled = false }) => {
   const navigate = useNavigate();
@@ -40,19 +40,7 @@ const PaymentButton = ({ rateData, formData, disabled = false }) => {
       const userId = user.uid;
 
       // Create Razorpay order
-      const orderRes = await axios.post(
-        "http://localhost:5000/api/payment/create-order",
-        { 
-          amount: amount, 
-          userId: userId 
-        },
-        {
-          headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          }
-        }
-      );
+      const orderRes = await createRazorpayOrder(amount, userId, token);
 
       const order = orderRes.data;
 
@@ -71,9 +59,6 @@ const PaymentButton = ({ rateData, formData, disabled = false }) => {
     name: formData.sender?.name || user.name,
     email: formData.sender?.email || user.email,
     contact: formData.sender?.phone || user.phone,
-  },
-  theme: {
-    color: "#0f172a",
   },
   method: {
     upi: true,
@@ -104,20 +89,11 @@ const PaymentButton = ({ rateData, formData, disabled = false }) => {
   const handlePaymentSuccess = async (response, token) => {
     try {
       // Verify payment
-      const verifyRes = await axios.post(
-        "http://localhost:5000/api/payment/verify",
-        {
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_signature: response.razorpay_signature,
-        },
-        {
-          headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          }
-        }
-      );
+      const verifyRes = await verifyRazorpayPayment({
+  razorpay_order_id: response.razorpay_order_id,
+  razorpay_payment_id: response.razorpay_payment_id,
+  razorpay_signature: response.razorpay_signature,
+}, token);
 
       const verified = verifyRes.data;
 
