@@ -1,7 +1,7 @@
 // src/admin/components/AdminSidebar.jsx
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, User } from 'lucide-react';
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -31,6 +31,10 @@ const AdminSidebar = () => {
         <NavLink to="/admin/shipments" className={navItemStyle}>
           <Package className="w-4 h-4" />
           All Shipments
+        </NavLink>
+        <NavLink to="/admin/users" className={navItemStyle}>
+          <User className="w-4 h-4" />
+          All Users
         </NavLink>
 
         <button
