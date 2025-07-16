@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -28,9 +28,11 @@ import AdminWelcome from './admin/Welcome';
 import AdminDashboard from './admin/Dashboard';
 import AllShipments from './admin/AllShipments';
 import UpdateShipment from './admin/UpdateShipment';
+import AllUsers from './admin/AllUsers';
 
 import { AuthProvider } from './context/AuthContext';
 import { ShipmentProvider } from './context/ShipmentContext';
+import { pingBackend } from './services/api';
 
 function AppContent() {
   const location = useLocation();
@@ -39,7 +41,6 @@ function AppContent() {
   return (
     <div className="min-h-screen flex flex-col">
       {!isAdmin && <Navbar />}
-
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={true} />
 
       <main className="flex-1">
@@ -57,19 +58,18 @@ function AppContent() {
           <Route path="/details" element={<ShipmentDetails />} />
           <Route path="/track" element={<TrackShipment />} />
           <Route path="/cancellation-success" element={<CancellationSuccess />} />
-          <Route path='/contact' element={<ContactPage/>}/>
-          <Route path='/privacy' element={<PrivacyPolicy/>} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="/about" element={<About />} />
-
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminWelcome />} />
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path='/admin/dashboard' element={<AdminDashboard/>}/>
-          <Route path='/admin/shipments' element={<AllShipments/>} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/shipments" element={<AllShipments />} />
           <Route path="/admin/shipments/:id/update" element={<UpdateShipment />} />
-
+          <Route path="/admin/users" element={<AllUsers />} />
         </Routes>
       </main>
 
@@ -79,6 +79,26 @@ function AppContent() {
 }
 
 function App() {
+  const [isBackendReady, setIsBackendReady] = useState(false);
+
+  useEffect(() => {
+    pingBackend()
+      .then(() => setIsBackendReady(true))
+      .catch(() => setIsBackendReady(true)); // Even if it fails, proceed
+  }, []);
+
+  if (!isBackendReady) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors">
+        <div className="text-4xl font-bold mb-4 animate-pulse">🚚 ShipNest</div>
+        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-lg text-center px-4">
+          Waking up servers... Preparing your shipments...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <Router>
       <AuthProvider>
