@@ -27,6 +27,7 @@ ShipNest is a comprehensive shipment delivery and tracking platform built for bo
 - 📊 **Dashboard:** Visual insights like total shipments, users, revenue, and shipment status graphs.
 - 📝 **Manage Shipments:** Update status (Pending, Shipped, Delivered, Cancelled, etc.)
 - 📈 **Analytics:** Pie charts and bar graphs for status distribution and performance.
+- 📝 **Manage Users:** Admin can add, edit, or delete users.
 
 ---
 
@@ -70,6 +71,7 @@ ShipNest is a comprehensive shipment delivery and tracking platform built for bo
 /admin/dashboard    → Admin Dashboard with analytics
 /admin/shipments    → View all shipments
 /admin/shipments/\:id/update → Update shipment status
+/admin/users       → Manage Users
 
 ````
 
