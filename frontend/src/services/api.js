@@ -60,3 +60,7 @@ export const verifyRazorpayPayment = async (paymentDetails, token) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+// 🔍 Health check API (ping backend)
+export const pingBackend = async () =>
+  axios.get(`${backendurl}/health`);

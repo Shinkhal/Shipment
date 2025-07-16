@@ -43,3 +43,6 @@ export const fetchAllShipments = () =>
 export const updateShipmentStatus = (shipmentId, data) =>
   adminAxios.put(`/shipments/${shipmentId}/status`, data);
 
+// Fetch all users with their shipment count
+export const fetchAllUsersWithShipments = () =>
+  adminAxios.get('/users/shipments');
