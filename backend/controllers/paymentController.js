@@ -1,4 +1,3 @@
-// controllers/paymentController.js
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import dotenv from 'dotenv';
@@ -10,9 +9,7 @@ const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_SECRET,
 });
-
 // CREATE ORDER
-// CREATE ORDER (cleaned version)
 export const createOrder = async (req, res) => {
   const { amount, userId } = req.body;
 
@@ -24,9 +21,9 @@ export const createOrder = async (req, res) => {
   }
 
   const options = {
-    amount: Math.round(amount * 100), // paise
+    amount: Math.round(amount * 100),
     currency: "INR",
-    receipt: `rcpt_${Date.now()}`,  // generic receipt ID
+    receipt: `rcpt_${Date.now()}`,
     notes: {
       userId: userId,
     },
@@ -65,8 +62,6 @@ export const verifyPayment = async (req, res) => {
     if (generated_signature !== razorpay_signature) {
       return res.status(400).json({ error: "Invalid payment signature" });
     }
-
-    // Just return paymentInfo
     res.status(200).json({
       message: "Payment verified",
       paymentInfo: {
@@ -106,14 +101,13 @@ export const refundPayment = async (req, res) => {
 
     // Razorpay Refund API call
     const refund = await razorpay.payments.refund(paymentId, {
-      amount: Math.round(shipment.payment.amount * 100), // in paise
+      amount: Math.round(shipment.payment.amount * 100), 
       notes: {
         shipmentId,
         reason: "User Cancelled",
       },
     });
-
-    // Update Firestore
+    
     await docRef.update({
       status: "Cancelled",
       cancelledAt: new Date(),

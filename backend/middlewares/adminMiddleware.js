@@ -16,7 +16,7 @@ export const verifyAdminToken = (req, res, next) => {
       return res.status(403).json({ message: 'Forbidden. Admin access only.' });
     }
 
-    req.admin = decoded; // You can access req.admin in your routes
+    req.admin = decoded;
     next();
   } catch (err) {
     return res.status(401).json({ message: 'Invalid or expired token.' });

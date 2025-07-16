@@ -11,7 +11,7 @@ export const verifyFirebaseToken = async (req, res, next) => {
 
   try {
     const decodedToken = await auth.verifyIdToken(token);
-    req.user = decodedToken; // attaches user data to request
+    req.user = decodedToken; 
     next();
   } catch (error) {
     console.error("Token verification failed:", error.message);

@@ -158,7 +158,7 @@ ShipNest
 };
 
 
-// ✅ Create Shipment
+// Create Shipment
 export const createShipment = async (req, res) => {
   const {
     sender,
@@ -173,7 +173,6 @@ export const createShipment = async (req, res) => {
   const userId = req.user.uid;
 
   try {
-    // Validate required fields
     if (
       !sender?.name || !sender?.phone ||
       !receiver?.name || !receiver?.phone ||
@@ -242,7 +241,6 @@ export const createShipment = async (req, res) => {
 
     const docRef = await db.collection("shipments").add(shipment);
     
-    // Send email notifications
     await sendShipmentCreatedEmail(shipment);
     
     res.status(201).json({ id: docRef.id, trackingId, ...shipment });
@@ -253,7 +251,7 @@ export const createShipment = async (req, res) => {
   }
 };
 
-// ✅ Get Shipment by Tracking ID
+// Get Shipment by Tracking ID
 export const getShipmentByTrackingId = async (req, res) => {
   const { trackingId } = req.params;
 
@@ -282,7 +280,7 @@ export const getShipmentByTrackingId = async (req, res) => {
   }
 };
 
-// ✅ Get Active Shipments
+// Get Active Shipments
 export const getActiveShipments = async (req, res) => {
   const userId = req.user.uid;
 
@@ -317,7 +315,7 @@ export const getActiveShipments = async (req, res) => {
   }
 };
 
-// ✅ Get Shipment History
+// Get Shipment History
 export const getShipmentHistory = async (req, res) => {
   const userId = req.user.uid;
   const page = parseInt(req.query.page) || 1;
@@ -327,12 +325,9 @@ export const getShipmentHistory = async (req, res) => {
   try {
     let baseQuery = db.collection("shipments").where("createdBy", "==", userId);
 
-    // Apply status filter if provided
     if (status && status.trim() !== '') {
       baseQuery = baseQuery.where("status", "==", status);
     }
-
-    // Apply date filters if provided
     if (req.query.dateFrom) {
       const dateFrom = new Date(req.query.dateFrom);
       dateFrom.setHours(0, 0, 0, 0); // Start of day
@@ -345,11 +340,9 @@ export const getShipmentHistory = async (req, res) => {
       baseQuery = baseQuery.where("createdAt", "<=", dateTo);
     }
 
-    // Get filtered count for pagination
     const countSnapshot = await baseQuery.get();
     const totalItems = countSnapshot.size;
 
-    // Get paginated results
     const snapshot = await baseQuery
       .orderBy("createdAt", "desc")
       .offset((page - 1) * limit)
@@ -384,7 +377,7 @@ export const getShipmentHistory = async (req, res) => {
   }
 };
 
-// ✅ Cancel Shipment
+// Cancel Shipment
 export const cancelShipment = async (req, res) => {
   const { id } = req.params;
   const userId = req.user.uid;
@@ -399,12 +392,10 @@ export const cancelShipment = async (req, res) => {
 
     const data = doc.data();
 
-    // Ensure the user owns the shipment
     if (data.createdBy !== userId) {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
-    // Only allow cancel if not yet shipped or beyond
     const nonCancelableStatuses = ['Shipped', 'In Transit', 'Delivered', 'Cancelled', 'Returned'];
     if (nonCancelableStatuses.includes(data.status)) {
       return res.status(400).json({ error: `Cannot cancel shipment in '${data.status}' status` });
@@ -425,7 +416,6 @@ export const cancelShipment = async (req, res) => {
 
     await docRef.update(updatedData);
 
-    // Send cancellation email
     const cancelledShipment = { ...data, ...updatedData };
     await sendCancellationEmail(cancelledShipment);
 

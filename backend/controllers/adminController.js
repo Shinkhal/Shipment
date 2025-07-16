@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import { db, auth } from '../config/firebase.js';
 import { sendEmail } from '../utils/EmailSender.js';
 
-// Email helper function for status updates
 const sendStatusUpdateEmail = async (shipment, newStatus, description) => {
   const { sender, receiver, trackingId, package: pkg } = shipment;
 
@@ -42,7 +41,6 @@ Status: ${newStatus}
 Update: ${statusMessage}
 Updated On: ${new Date().toLocaleString()}
 `;
-
   // Email to sender
   if (sender?.email) {
     try {
@@ -90,7 +88,6 @@ export const login = async (req, res) => {
       email === process.env.ADMIN_EMAIL &&
       password === process.env.ADMIN_PASSWORD
     ) {
-      // ✅ FIX: `expiresIn: '1d'` must be in quotes
       const token = jwt.sign({ email, role: 'admin' }, process.env.SECRET_KEY, {
         expiresIn: '1d',
       });
@@ -121,7 +118,7 @@ export const dashboard = async (req, res) => {
 
     shipments.forEach(shipment => {
       const status = shipment.status;
-      const amount = shipment.payment?.amount || 0; // ✅ fixed here
+      const amount = shipment.payment?.amount || 0; 
       totalRevenue += amount;
 
       if (statusCounts.hasOwnProperty(status)) {
@@ -144,7 +141,6 @@ export const dashboard = async (req, res) => {
   }
 };
 
-// ✅ Update Shipment Status with Email Notifications
 export const updateShipmentStatus = async (req, res) => {
   const shipmentId = req.params.id;
   const { status, description } = req.body;
@@ -159,7 +155,6 @@ export const updateShipmentStatus = async (req, res) => {
 
     const shipment = docSnap.data();
 
-    // Validate status
     const validStatuses = ['Pending', 'Processing', 'Shipped', 'In Transit', 'Delivered', 'Cancelled', 'Returned'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: 'Invalid status provided' });
@@ -180,20 +175,17 @@ export const updateShipmentStatus = async (req, res) => {
       lastUpdated: new Date(),
     };
 
-    // Add delivered timestamp if status is Delivered
     if (status === 'Delivered') {
       updateData.deliveredAt = new Date();
     }
 
     await docRef.update(updateData);
 
-    // Send email notifications
     try {
       const updatedShipment = { ...shipment, ...updateData };
       await sendStatusUpdateEmail(updatedShipment, status, description);
     } catch (emailError) {
       console.error('Error sending status update emails:', emailError);
-      // Continue with response even if email fails
     }
 
     res.status(200).json({
@@ -227,3 +219,38 @@ export const getAllShipments = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch shipments" });
   }
 };
+
+
+export const getAllUserwithShipments = async (req, res) => {
+  try {
+    const userSnapshot = await db.collection("users").get();
+    const users = {};
+    userSnapshot.forEach(doc => {
+      const data = doc.data();
+      users[data.uid] = {
+        userId: data.uid,
+        email: data.email || '',
+        name: data.name || 'Unnamed',
+        phone: data.phone || '',
+        shipmentCount: 0,
+      };
+    });
+
+    const shipmentSnapshot = await db.collection("shipments").get();
+    shipmentSnapshot.forEach(doc => {
+      const shipment = doc.data();
+      const userId = shipment.createdBy;
+      if (userId && users[userId]) {
+        users[userId].shipmentCount += 1;
+      }
+    });
+
+    const result = Object.values(users);
+
+    res.status(200).json({ users: result });
+  } catch (error) {
+    console.error("❌ Error fetching users with shipments:", error);
+    res.status(500).json({ error: "Failed to fetch user shipment data" });
+  }
+};
+
