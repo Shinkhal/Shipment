@@ -4,6 +4,7 @@ import { getActiveShipments, cancelShipment, refundShipment } from '../services/
 import { useShipment } from '../context/ShipmentContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Loader from '../components/Loader';
 
 const ActiveShipments = () => {
   const { user, loading: authLoading } = useAuth();
@@ -14,51 +15,50 @@ const ActiveShipments = () => {
   const navigate = useNavigate();
 
   const statusConfig = {
-  pending: { 
-    bg: 'bg-gradient-to-r from-orange-50 to-yellow-50', 
-    text: 'text-orange-700', 
-    icon: '⏳', 
-    badge: 'bg-orange-100 text-orange-700 border-orange-200',
-    progress: 'bg-orange-200',
-    progressFill: 'bg-orange-500'
-  },
-  processing: { 
-    bg: 'bg-gradient-to-r from-blue-50 to-indigo-50', 
-    text: 'text-blue-700', 
-    icon: '⚙️', 
-    badge: 'bg-blue-100 text-blue-700 border-blue-200',
-    progress: 'bg-blue-200',
-    progressFill: 'bg-blue-500'
-  },
-  shipped: { 
-    bg: 'bg-gradient-to-r from-purple-50 to-pink-50', 
-    text: 'text-purple-700', 
-    icon: '📦', 
-    badge: 'bg-purple-100 text-purple-700 border-purple-200',
-    progress: 'bg-purple-200',
-    progressFill: 'bg-purple-500'
-  },
-  in_transit: { 
-    bg: 'bg-gradient-to-r from-green-50 to-emerald-50', 
-    text: 'text-green-700', 
-    icon: '🚚', 
-    badge: 'bg-green-100 text-green-700 border-green-200',
-    progress: 'bg-green-200',
-    progressFill: 'bg-green-500'
-  }
-};
-
-const getProgressPercentage = (status) => {
-  const progressMap = {
-    pending: 25,
-    processing: 50,
-    shipped: 75,
-    in_transit: 90
+    pending: { 
+      bg: 'bg-accent/10 backdrop-blur-sm', 
+      text: 'text-accent', 
+      icon: '⏳', 
+      badge: 'bg-accent/20 text-accent border-accent/30 backdrop-blur-sm',
+      progress: 'bg-accent/20 backdrop-blur-sm',
+      progressFill: 'bg-accent'
+    },
+    processing: { 
+      bg: 'bg-primary/10 backdrop-blur-sm', 
+      text: 'text-primary', 
+      icon: '⚙️', 
+      badge: 'bg-primary/20 text-primary border-primary/30 backdrop-blur-sm',
+      progress: 'bg-primary/20 backdrop-blur-sm',
+      progressFill: 'bg-primary'
+    },
+    shipped: { 
+      bg: 'bg-success/10 backdrop-blur-sm', 
+      text: 'text-success', 
+      icon: '📦', 
+      badge: 'bg-success/20 text-success border-success/30 backdrop-blur-sm',
+      progress: 'bg-success/20 backdrop-blur-sm',
+      progressFill: 'bg-success'
+    },
+    in_transit: { 
+      bg: 'bg-success/15 backdrop-blur-sm', 
+      text: 'text-success', 
+      icon: '🚚', 
+      badge: 'bg-success/25 text-success border-success/40 backdrop-blur-sm',
+      progress: 'bg-success/25 backdrop-blur-sm',
+      progressFill: 'bg-success'
+    }
   };
-  const key = status?.toLowerCase().replace(/\s+/g, '_');
-  return progressMap[key] || 0;
-};
 
+  const getProgressPercentage = (status) => {
+    const progressMap = {
+      pending: 25,
+      processing: 50,
+      shipped: 75,
+      in_transit: 90
+    };
+    const key = status?.toLowerCase().replace(/\s+/g, '_');
+    return progressMap[key] || 0;
+  };
 
   useEffect(() => {
     const fetchActiveShipments = async () => {
@@ -146,23 +146,31 @@ const getProgressPercentage = (status) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex justify-center items-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading your shipments...</p>
-        </div>
-      </div>
+      
+        <Loader />
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex justify-center items-center p-6">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-red-100 p-8">
-          <div className="text-center">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h3 className="text-xl font-bold text-red-700 mb-2">Oops! Something went wrong</h3>
-            <p className="text-red-600 leading-relaxed">{error}</p>
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Ambient background elements */}
+        <div className="absolute inset-0 bg-primary/5"></div>
+        <div className="absolute top-20 left-20 w-96 h-96 bg-error/20 rounded-full blur-3xl"></div>
+        
+        <div className="relative z-10 flex justify-center items-center min-h-screen p-6">
+          <div className="max-w-md w-full bg-surface/80 backdrop-blur-xl border border-surface/50 rounded-2xl p-12 shadow-card">
+            <div className="text-center">
+              <div className="text-6xl mb-6 opacity-60">⚠️</div>
+              <h3 className="text-xl font-bold text-error mb-4">Something went wrong</h3>
+              <p className="text-textSecondary leading-relaxed mb-6">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="bg-primary/90 hover:bg-primary text-surface px-6 py-3 rounded-xl font-medium transition-all duration-300 backdrop-blur-sm"
+              >
+                Try Again
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -170,29 +178,35 @@ const getProgressPercentage = (status) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Ambient background elements */}
+      <div className="absolute inset-0 bg-primary/5"></div>
+      <div className="absolute top-20 left-20 w-96 h-96 bg-accent/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-20 right-20 w-80 h-80 bg-primary/20 rounded-full blur-3xl"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-success/10 rounded-full blur-3xl"></div>
+
+      <div className="relative z-10 p-6 max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
-            Your Active Shipments
+          <h1 className="text-5xl font-bold text-textPrimary mb-4 tracking-tight">
+            Active Shipments
           </h1>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Track your packages in real-time and stay updated on delivery progress
+          <p className="text-textSecondary text-lg max-w-2xl mx-auto font-medium">
+            Track your packages in real-time with our premium logistics platform
           </p>
         </div>
 
         {shipments.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="inline-flex items-center justify-center w-32 h-32 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full mb-8">
-              <span className="text-6xl">📦</span>
+          <div className="text-center py-20">
+            <div className="inline-flex items-center justify-center w-32 h-32 bg-surface/80 backdrop-blur-xl border border-surface/50 rounded-2xl mb-8 shadow-card">
+              <span className="text-6xl opacity-60">📦</span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">No Active Shipments</h3>
-            <p className="text-gray-600 text-lg max-w-md mx-auto mb-8">
-              All your packages have been successfully delivered! Ready to ship something new?
+            <h3 className="text-2xl font-bold text-textPrimary mb-4">No Active Shipments</h3>
+            <p className="text-textSecondary text-lg max-w-md mx-auto mb-8 font-medium">
+              All your packages have been successfully delivered. Ready to ship something new?
             </p>
-            <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+            <button className="bg-primary/90 hover:bg-primary text-surface px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-card hover:shadow-lg backdrop-blur-sm">
               Create New Shipment
             </button>
           </div>
@@ -201,148 +215,140 @@ const getProgressPercentage = (status) => {
             {shipments.map((shipment) => {
               const daysUntilDelivery = getDaysUntilDelivery(shipment.estimatedDelivery);
               const rawStatus = shipment.status || 'pending';
-const statusKey = rawStatus.toLowerCase().replace(/\s+/g, '_');
-const statusStyle = statusConfig[statusKey] || statusConfig['pending'];
-const progress = getProgressPercentage(rawStatus);
+              const statusKey = rawStatus.toLowerCase().replace(/\s+/g, '_');
+              const statusStyle = statusConfig[statusKey] || statusConfig['pending'];
+              const progress = getProgressPercentage(rawStatus);
 
-              
               return (
-                <div key={shipment.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                  {/* Status Header */}
-                  <div className={`${statusStyle.bg} p-4 border-b border-gray-100`}>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-3">
-                        <div className="text-2xl">{statusStyle.icon}</div>
-                        <div>
-                          <h3 className="font-bold text-gray-900 text-lg">
-                            #{shipment.id.slice(-8)}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            Shipment ID
-                          </p>
+                <div key={shipment.id} className="group">
+                  <div className="bg-surface/80 backdrop-blur-xl border border-surface/50 rounded-2xl overflow-hidden hover:shadow-card transition-all duration-500 hover:scale-[1.02] shadow-lg">
+                    {/* Status Header */}
+                    <div className={`${statusStyle.bg} p-6 border-b border-surface/30`}>
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center space-x-4">
+                          <div className="text-3xl">{statusStyle.icon}</div>
+                          <div>
+                            <h3 className="font-bold text-textPrimary text-xl tracking-tight">
+                              #{shipment.id.slice(-8)}
+                            </h3>
+                            <p className="text-sm text-textSecondary font-medium mt-1">
+                              Shipment ID
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold border ${statusStyle.badge}`}>
-                        {shipment.status?.replace('_', ' ').toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-6">
-                    {/* Progress Bar */}
-                    <div className="mb-6">
-                      
-                      <div className={`w-full h-2 ${statusStyle.progress} rounded-full overflow-hidden`}>
-                        <div 
-                          className={`h-full ${statusStyle.progressFill} rounded-full transition-all duration-500`}
-                          style={{ width: `${progress}%` }}
-                        ></div>
+                        <span className={`px-4 py-2 rounded-xl text-xs font-bold border ${statusStyle.badge}`}>
+                          {shipment.status?.replace('_', ' ').toUpperCase()}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Route Info */}
-                    <div className="mb-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 text-center">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full mx-auto mb-2"></div>
-                          <p className="text-xs font-medium text-gray-600">FROM</p>
-                          <p className="text-sm font-bold text-gray-900 truncate">
-                            {shipment.pickup.city || 'Unknown'}
-                          </p>
+                    <div className="p-6">
+                      {/* Progress Bar */}
+                      <div className="mb-8">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-sm font-medium text-textSecondary">Progress</span>
+                          <span className="text-sm font-bold text-textPrimary">{progress}%</span>
                         </div>
-                        <div className="flex-1 px-4">
-                          <div className="border-t-2 border-dashed border-gray-300 relative">
-                            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                              <div className="text-lg">✈️</div>
+                        <div className={`w-full h-3 ${statusStyle.progress} rounded-full overflow-hidden`}>
+                          <div 
+                            className={`h-full ${statusStyle.progressFill} rounded-full transition-all duration-700 ease-out`}
+                            style={{ width: `${progress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      {/* Route Info */}
+                      <div className="mb-8">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 text-center">
+                            <div className="w-4 h-4 bg-primary rounded-full mx-auto mb-3"></div>
+                            <p className="text-xs font-bold text-textSecondary mb-1 tracking-wider">FROM</p>
+                            <p className="text-sm font-bold text-textPrimary truncate">
+                              {shipment.pickup.city || 'Unknown'}
+                            </p>
+                          </div>
+                          <div className="flex-1 px-6">
+                            <div className="border-t-2 border-dashed border-textSecondary/30 relative">
+                              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <div className="text-lg bg-surface rounded-full p-1">✈️</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex-1 text-center">
+                            <div className="w-4 h-4 bg-success rounded-full mx-auto mb-3"></div>
+                            <p className="text-xs font-bold text-textSecondary mb-1 tracking-wider">TO</p>
+                            <p className="text-sm font-bold text-textPrimary truncate">
+                              {shipment.delivery.city || 'Unknown'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Shipment Details */}
+                      <div className="space-y-6 mb-8">
+                        <div className="bg-surface/60 backdrop-blur-sm rounded-xl p-5 border border-surface/30">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-xs font-bold text-textSecondary mb-2 tracking-wider">SENDER</p>
+                              <p className="text-sm font-semibold text-textPrimary truncate">
+                                {shipment.senderName || 'Unknown'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-textSecondary mb-2 tracking-wider">RECEIVER</p>
+                              <p className="text-sm font-semibold text-textPrimary truncate">
+                                {shipment.receiverName || 'Unknown'}
+                              </p>
                             </div>
                           </div>
                         </div>
-                        <div className="flex-1 text-center">
-                          <div className="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
-                          <p className="text-xs font-medium text-gray-600">TO</p>
-                          <p className="text-sm font-bold text-gray-900 truncate">
-                            {shipment.delivery.city || 'Unknown'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
 
-                    {/* Shipment Details */}
-                    <div className="space-y-4 mb-6">
-                      <div className="bg-gray-50 rounded-xl p-4">
                         <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-xs font-medium text-gray-500 mb-1">SENDER</p>
-                            <p className="text-sm font-semibold text-gray-900 truncate">
-                              {shipment.senderName || 'Unknown'}
+                          <div className="text-center p-4 bg-primary/10 backdrop-blur-sm rounded-xl border border-primary/20">
+                            <p className="text-xs font-bold text-primary mb-2 tracking-wider">WEIGHT</p>
+                            <p className="text-lg font-bold text-primary">
+                              {shipment.weight || 'N/A'} <span className="text-sm font-medium">kg</span>
                             </p>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-gray-500 mb-1">RECEIVER</p>
-                            <p className="text-sm font-semibold text-gray-900 truncate">
-                              {shipment.receiverName || 'Unknown'}
+                          <div className="text-center p-4 bg-accent/10 backdrop-blur-sm rounded-xl border border-accent/20">
+                            <p className="text-xs font-bold text-accent mb-2 tracking-wider">DELIVERY</p>
+                            <p className={`text-lg font-bold ${
+                              daysUntilDelivery <= 1 ? 'text-error' : 
+                              daysUntilDelivery <= 3 ? 'text-accent' : 'text-success'
+                            }`}>
+                              {daysUntilDelivery > 0 ? `${daysUntilDelivery}d` : 'Due'}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center p-3 bg-blue-50 rounded-xl">
-                          <p className="text-xs font-medium text-blue-600 mb-1">WEIGHT</p>
-                          <p className="text-lg font-bold text-blue-800">
-                            {shipment.weight || 'N/A'} <span className="text-sm">kg</span>
-                          </p>
-                        </div>
-                        <div className="text-center p-3 bg-purple-50 rounded-xl">
-                          <p className="text-xs font-medium text-purple-600 mb-1">DELIVERY</p>
-                          <p className={`text-lg font-bold ${
-                            daysUntilDelivery <= 1 ? 'text-red-600' : 
-                            daysUntilDelivery <= 3 ? 'text-orange-600' : 'text-green-600'
-                          }`}>
-                            {daysUntilDelivery > 0 ? `${daysUntilDelivery}d` : 'Due'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                      
 
-                    {/* Timeline */}
-                    <div className="mb-6 p-4 bg-gray-50 rounded-xl">
-                      <div className="flex justify-between items-center text-xs text-gray-600">
-                        <div>
-                          <p className="font-medium">Created</p>
-                          <p>{new Date(shipment.createdAt).toLocaleDateString()}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium">Expected</p>
-                          <p>{new Date(shipment.estimatedDelivery).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                    </div>
+                      {/* Action Buttons */}
+                      <div className="flex gap-4">
+                        {['pending', 'processing'].includes(shipment.status?.toLowerCase()) ? (
+                          <button
+                            onClick={() => handleCancelShipment(shipment)}
+                            className="flex-1 px-5 py-3 text-sm font-semibold bg-error/10 text-error rounded-xl hover:bg-error/20 transition-all duration-300 border border-error/30 backdrop-blur-sm"
+                          >
+                            Cancel Shipment
+                          </button>
+                        ) : (
+                          <button
+                            disabled
+                            className="flex-1 px-5 py-3 text-sm font-semibold bg-surface/40 text-textSecondary rounded-xl cursor-not-allowed border border-surface/30 backdrop-blur-sm"
+                          >
+                            Cannot Cancel
+                          </button>
+                        )}
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-3">
-                      {['pending', 'processing'].includes(shipment.status?.toLowerCase()) ? (
-                        <button
-                          onClick={() => handleCancelShipment(shipment)}
-                          className="flex-1 px-4 py-3 text-sm font-semibold bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all duration-200 border border-red-200 hover:border-red-300"
+                        <button 
+                          onClick={() => handleDetailsClick(shipment)} 
+                          className="flex-1 px-5 py-3 text-sm font-semibold bg-primary/90 hover:bg-primary text-surface rounded-xl transition-all duration-300 shadow-card hover:shadow-lg backdrop-blur-sm"
                         >
-                          Cancel Shipment
+                          View Details
                         </button>
-                      ) : (
-                        <button
-                          disabled
-                          className="flex-1 px-4 py-3 text-sm font-semibold bg-gray-100 text-gray-400 rounded-xl cursor-not-allowed border border-gray-200"
-                        >
-                          Cannot Cancel
-                        </button>
-                      )}
-
-                      <button 
-                        onClick={() => handleDetailsClick(shipment)} 
-                        className="flex-1 px-4 py-3 text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
-                      >
-                        View Details
-                      </button>
+                      </div>
                     </div>
                   </div>
                 </div>

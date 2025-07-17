@@ -10,8 +10,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import AddressSection from '../components/AddressSection'; // adjust path if needed
-
+import AddressSection from '../components/AddressSection';
 
 const CreateShipment = () => {
   const { user, loading: authLoading } = useAuth();
@@ -139,11 +138,11 @@ const CreateShipment = () => {
         return; 
     }
     setIsLoading(true);
-    // i have to send the form data to the confirm details page no api call here
+    
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
+      
       // Navigate to confirm details page with form data
       navigate('/confirm', { state: { formData } });
     } catch (error) {
@@ -152,44 +151,46 @@ const CreateShipment = () => {
     } finally {
       setIsLoading(false);
     }
-    
-    
   };
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-white">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-textSecondary">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-8 text-center">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <Package className="w-8 h-8 text-purple-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Create Shipment</h1>
+        <div className="mb-12 text-center">
+          <div className="flex items-center justify-center space-x-4 mb-6">
+            <div className="p-3 bg-surface/80 backdrop-blur-sm rounded-2xl border border-border shadow-card">
+              <Package className="w-8 h-8 text-accent" />
+            </div>
+            <h1 className="text-4xl font-bold text-primary tracking-tight">Create Shipment</h1>
           </div>
-          <p className="text-gray-600">Fill in the details to book your shipment</p>
+          <p className="text-textSecondary text-lg">Fill in the details to book your premium shipment</p>
         </div>
 
-        {/* Form */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Main Form Container */}
+        <div className="bg-surface/70 backdrop-blur-xl rounded-2xl border border-border shadow-card p-8 lg:p-12">
+          <form onSubmit={handleSubmit} className="space-y-10">
             
-            {/* Sender & Receiver */}
+            {/* Sender & Receiver Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Sender Information */}
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 mb-4">
-                  <User className="w-6 h-6 text-purple-600" />
-                  <h3 className="text-xl font-semibold text-gray-900">Sender Details</h3>
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="p-2 bg-accent/10 rounded-xl">
+                    <User className="w-6 h-6 text-accent" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-primary">Sender Details</h3>
                 </div>
                 
                 <div className="space-y-4">
@@ -197,7 +198,7 @@ const CreateShipment = () => {
                     type="text"
                     value={formData.sender.name}
                     onChange={(e) => handleInputChange('sender', 'name', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary placeholder-textSecondary"
                     placeholder="Your full name *"
                     required
                   />
@@ -206,7 +207,7 @@ const CreateShipment = () => {
                     type="tel"
                     value={formData.sender.phone}
                     onChange={(e) => handleInputChange('sender', 'phone', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary placeholder-textSecondary"
                     placeholder="Your phone number *"
                     required
                   />
@@ -215,17 +216,19 @@ const CreateShipment = () => {
                     type="email"
                     value={formData.sender.email}
                     onChange={(e) => handleInputChange('sender', 'email', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary placeholder-textSecondary"
                     placeholder="Your email (optional)"
                   />
                 </div>
               </div>
 
               {/* Receiver Information */}
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 mb-4">
-                  <User className="w-6 h-6 text-green-600" />
-                  <h3 className="text-xl font-semibold text-gray-900">Receiver Details</h3>
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="p-2 bg-success/10 rounded-xl">
+                    <User className="w-6 h-6 text-success" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-primary">Receiver Details</h3>
                 </div>
                 
                 <div className="space-y-4">
@@ -233,7 +236,7 @@ const CreateShipment = () => {
                     type="text"
                     value={formData.receiver.name}
                     onChange={(e) => handleInputChange('receiver', 'name', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary placeholder-textSecondary"
                     placeholder="Receiver's full name *"
                     required
                   />
@@ -242,7 +245,7 @@ const CreateShipment = () => {
                     type="tel"
                     value={formData.receiver.phone}
                     onChange={(e) => handleInputChange('receiver', 'phone', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary placeholder-textSecondary"
                     placeholder="Receiver's phone number *"
                     required
                   />
@@ -251,53 +254,71 @@ const CreateShipment = () => {
                     type="email"
                     value={formData.receiver.email}
                     onChange={(e) => handleInputChange('receiver', 'email', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary placeholder-textSecondary"
                     placeholder="Receiver's email (optional)"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Addresses */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t pt-8">
-              {/* Pickup Address Section */}
-<AddressSection
-  title="Pickup Address"
-  icon={MapPin}
-  iconColor="text-purple-600"
-  addressData={formData.pickup}
-  onAddressChange={(field, value) =>
-    handleInputChange('pickup', field, value)
-  }
-/>
-
-{/* Delivery Address Section */}
-<AddressSection
-  title="Delivery Address"
-  icon={MapPin}
-  iconColor="text-green-600"
-  addressData={formData.delivery}
-  onAddressChange={(field, value) =>
-    handleInputChange('delivery', field, value)
-  }
-/>
-
+            {/* Address Section Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border"></div>
+              </div>
+              <div className="relative flex justify-center">
+                <div className="bg-surface px-4 py-2 rounded-xl border border-border">
+                  <MapPin className="w-5 h-5 text-accent" />
+                </div>
+              </div>
             </div>
 
-            {/* Package & Service */}
-            <div className="border-t pt-8 space-y-6">
-              <div className="flex items-center space-x-3 mb-6">
-                <Package className="w-6 h-6 text-purple-600" />
-                <h3 className="text-xl font-semibold text-gray-900">Package & Service Details</h3>
+            {/* Addresses */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Pickup Address Section */}
+              <AddressSection
+                title="Pickup Address"
+                icon={MapPin}
+                iconColor="text-accent"
+                addressData={formData.pickup}
+                onAddressChange={(field, value) =>
+                  handleInputChange('pickup', field, value)
+                }
+              />
+
+              {/* Delivery Address Section */}
+              <AddressSection
+                title="Delivery Address"
+                icon={MapPin}
+                iconColor="text-success"
+                addressData={formData.delivery}
+                onAddressChange={(field, value) =>
+                  handleInputChange('delivery', field, value)
+                }
+              />
+            </div>
+
+            {/* Package & Service Section */}
+            <div className="space-y-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <div className="bg-surface px-4 py-2 rounded-xl border border-border flex items-center space-x-2">
+                    <Package className="w-5 h-5 text-accent" />
+                    <span className="text-textSecondary font-medium">Package Details</span>
+                  </div>
+                </div>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="space-y-4">
                   <input
                     type="text"
                     value={formData.package.description}
                     onChange={(e) => handleInputChange('package', 'description', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary placeholder-textSecondary"
                     placeholder="Package description *"
                     required
                   />
@@ -305,7 +326,7 @@ const CreateShipment = () => {
                   <select
                     value={formData.package.category}
                     onChange={(e) => handleInputChange('package', 'category', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary"
                   >
                     {packageCategories.map((category) => (
                       <option key={category.value} value={category.value}>
@@ -314,25 +335,23 @@ const CreateShipment = () => {
                     ))}
                   </select>
                   
-                  <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="number"
-                      value={formData.package.weight}
-                      onChange={(e) => handleInputChange('package', 'weight', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="Weight (kg) *"
-                      min="0.1"
-                      step="0.1"
-                      required
-                    />
-                  </div>
+                  <input
+                    type="number"
+                    value={formData.package.weight}
+                    onChange={(e) => handleInputChange('package', 'weight', e.target.value)}
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary placeholder-textSecondary"
+                    placeholder="Weight (kg) *"
+                    min="0.1"
+                    step="0.1"
+                    required
+                  />
                 </div>
                 
                 <div className="space-y-4">
                   <select
                     value={formData.service.type}
                     onChange={(e) => handleInputChange('service', 'type', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary"
                   >
                     {serviceTypes.map((service) => (
                       <option key={service.value} value={service.value}>
@@ -345,14 +364,14 @@ const CreateShipment = () => {
                     type="date"
                     value={formData.service.pickupDate}
                     onChange={(e) => handleInputChange('service', 'pickupDate', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary"
                     min={getTomorrowDate()}
                   />
                   
                   <select
                     value={formData.service.preferredTime}
                     onChange={(e) => handleInputChange('service', 'preferredTime', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-surface/50 backdrop-blur-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all duration-200 text-textPrimary"
                   >
                     {timeSlots.map((slot) => (
                       <option key={slot} value={slot}>{slot}</option>
@@ -364,36 +383,36 @@ const CreateShipment = () => {
 
             {/* Message Display */}
             {message.text && (
-              <div className={`p-4 rounded-lg flex items-center space-x-3 ${
+              <div className={`p-4 rounded-xl backdrop-blur-sm border flex items-center space-x-3 ${
                 message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
+                  ? 'bg-success/10 text-success border-success/20'
+                  : 'bg-error/10 text-error border-error/20'
               }`}>
                 {message.type === 'success' ? (
                   <CheckCircle className="w-5 h-5" />
                 ) : (
                   <AlertCircle className="w-5 h-5" />
                 )}
-                <span>{message.text}</span>
+                <span className="font-medium">{message.text}</span>
               </div>
             )}
 
             {/* Submit Button */}
-            <div className="pt-6 border-t">
+            <div className="pt-6">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:bg-purple-400 transition-colors"
+                className="w-full flex items-center justify-center space-x-3 px-8 py-4 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-surface rounded-xl font-semibold transition-all duration-200 shadow-card hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
               >
                 {isLoading ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Confirming</span>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-surface"></div>
+                    <span>Processing...</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-5 h-5" />
-                    <span>View Bill</span>
+                    <span>View Bill & Confirm</span>
                   </>
                 )}
               </button>

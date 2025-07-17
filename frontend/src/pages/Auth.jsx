@@ -14,7 +14,7 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
   updateProfile,
-  fetchSignInMethodsForEmail
+  fetchSignInMethodsForEmail,
 } from 'firebase/auth';
 import { auth, db } from '../services/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
@@ -35,7 +35,6 @@ const AuthPages = () => {
   });
 
   useEffect(() => {
-    // Navigate to home if user exists
     if (!authLoading && user) {
       navigate('/');
     }
@@ -54,12 +53,10 @@ const AuthPages = () => {
     setIsLoading(true);
     try {
       const provider = new GoogleAuthProvider();
-
-      // Optional: user already typed email, check for conflicts
       if (formData.email) {
         const methods = await fetchSignInMethodsForEmail(auth, formData.email);
         if (methods.includes('password')) {
-          toast.error("This account is registered with email/password. Please sign in using email.");
+          toast.error("This account is registered with email/password.");
           setIsLoading(false);
           return;
         }
@@ -67,28 +64,23 @@ const AuthPages = () => {
 
       const result = await signInWithPopup(auth, provider);
       const { user } = result;
-
       const userRef = doc(db, 'users', user.uid);
       const userSnap = await getDoc(userRef);
+
       if (!userSnap.exists()) {
         await setDoc(userRef, {
           uid: user.uid,
           name: user.displayName || '',
           email: user.email || '',
           phone: '',
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         });
       }
 
-      toast.success("Google sign-in successful!");
-      // Navigation will be handled by useEffect
+      toast.success("Signed in with Google!");
     } catch (error) {
-      if (error.code === 'auth/account-exists-with-different-credential') {
-        toast.error("Account exists with different sign-in method.");
-      } else {
-        console.error('Google sign-in error:', error);
-        toast.error(error.message || "Google sign-in failed");
-      }
+      console.error(error);
+      toast.error(error.message || "Google sign-in failed");
     } finally {
       setIsLoading(false);
     }
@@ -110,22 +102,20 @@ const AuthPages = () => {
     setIsLoading(true);
     try {
       await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
-
       const methods = await fetchSignInMethodsForEmail(auth, email);
 
       if (isLogin) {
         if (methods.includes('google.com')) {
-          toast.error("This account was created using Google. Please sign in with Google.");
+          toast.error("Please use Google to sign in.");
           setIsLoading(false);
           return;
         }
-        
+
         await signInWithEmailAndPassword(auth, email, password);
-        toast.success("Login successful!");
-        // Navigation will be handled by useEffect
+        toast.success("Logged in!");
       } else {
         if (methods.length > 0) {
-          toast.error("This email is already registered with another method.");
+          toast.error("Email already in use.");
           setIsLoading(false);
           return;
         }
@@ -138,11 +128,10 @@ const AuthPages = () => {
           name,
           email,
           phone,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         });
 
-        toast.success("Account created successfully!");
-        // Navigation will be handled by useEffect
+        toast.success("Account created!");
       }
     } catch (err) {
       console.error(err);
@@ -154,25 +143,25 @@ const AuthPages = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 p-4">
-      <div className="max-w-md w-full space-y-8 bg-white rounded-3xl p-8 shadow-lg">
-        <h2 className="text-center text-2xl font-bold text-gray-700">
+    <div className="min-h-screen flex justify-center items-center bg-background p-4">
+      <div className="max-w-md w-full bg-surface rounded-2xl p-8 shadow-card">
+        <h2 className="text-center text-2xl font-bold text-textPrimary mb-6">
           {isLogin ? 'Welcome Back!' : 'Create an Account'}
         </h2>
 
         <div className="space-y-4">
           {!isLogin && (
-            <>
-              <label className="block text-sm text-gray-700">Full Name</label>
+            <div>
+              <label className="text-sm text-textSecondary">Full Name</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary w-5 h-5" />
                 <input
                   type="text"
                   name="name"
@@ -180,31 +169,33 @@ const AuthPages = () => {
                   onChange={handleInputChange}
                   placeholder="Your Name"
                   disabled={isLoading}
-                  className="pl-10 pr-3 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="input-field pl-10"
                 />
               </div>
-            </>
+            </div>
           )}
 
-          <label className="block text-sm text-gray-700">Email</label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="you@example.com"
-              disabled={isLoading}
-              className="pl-10 pr-3 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
+          <div>
+            <label className="text-sm text-textSecondary">Email</label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary w-5 h-5" />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="you@example.com"
+                disabled={isLoading}
+                className="input-field pl-10"
+              />
+            </div>
           </div>
 
           {!isLogin && (
-            <>
-              <label className="block text-sm text-gray-700">Phone</label>
+            <div>
+              <label className="text-sm text-textSecondary">Phone</label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary w-5 h-5" />
                 <input
                   type="tel"
                   name="phone"
@@ -212,47 +203,49 @@ const AuthPages = () => {
                   onChange={handleInputChange}
                   placeholder="1234567890"
                   disabled={isLoading}
-                  className="pl-10 pr-3 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="input-field pl-10"
                 />
               </div>
-            </>
+            </div>
           )}
 
-          <label className="block text-sm text-gray-700">Password</label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              placeholder="********"
-              disabled={isLoading}
-              className="pl-10 pr-10 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(prev => !prev)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
+          <div>
+            <label className="text-sm text-textSecondary">Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary w-5 h-5" />
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="********"
+                disabled={isLoading}
+                className="input-field pl-10 pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(prev => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-textSecondary hover:text-primary"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
-            <label className="text-sm flex items-center gap-2 cursor-pointer">
+            <label className="text-sm flex items-center gap-2 cursor-pointer text-textSecondary">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={() => setRememberMe(!rememberMe)}
-                className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                className="accent-primary"
               />
               Remember Me
             </label>
             {isLogin && (
-              <button 
-                onClick={() => navigate("/forgot-password")} 
-                className="text-sm text-purple-600 hover:text-purple-700 hover:underline"
+              <button
+                onClick={() => navigate("/forgot-password")}
+                className="text-sm text-primary hover:underline"
               >
                 Forgot Password?
               </button>
@@ -262,32 +255,33 @@ const AuthPages = () => {
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="w-full py-3 text-white font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+            className="w-full py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition disabled:opacity-50"
           >
-            {isLoading ? (isLogin ? "Signing In..." : "Creating...") : (isLogin ? "Sign In" : "Sign Up")}
+            {isLoading
+              ? isLogin
+                ? "Signing In..."
+                : "Creating..."
+              : isLogin
+              ? "Sign In"
+              : "Sign Up"}
           </button>
 
-          <div className="relative text-center my-4">
-            <hr className="border-gray-300" />
-            <span className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-gray-400 text-sm">
-              OR
-            </span>
-          </div>
+          <div className="text-center text-sm text-textSecondary my-4">OR</div>
 
           <button
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full py-3 flex justify-center items-center border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 flex justify-center items-center border border-border rounded-lg bg-white hover:bg-gray-50 transition"
           >
             <FcGoogle size={20} className="mr-2" />
             Continue with Google
           </button>
 
-          <p className="text-center text-sm mt-4 text-gray-600">
+          <p className="text-center text-sm text-textSecondary mt-4">
             {isLogin ? "Don't have an account?" : "Already have an account?"}
             <button
               onClick={toggleMode}
-              className="ml-1 text-purple-600 hover:text-purple-700 hover:underline font-medium"
+              className="ml-1 text-primary hover:underline font-medium"
               disabled={isLoading}
             >
               {isLogin ? "Sign Up" : "Sign In"}
@@ -296,16 +290,16 @@ const AuthPages = () => {
         </div>
 
         <div className="grid grid-cols-3 gap-4 text-center mt-6">
-          <div className="text-gray-600">
-            <Package className="mx-auto text-purple-600 w-6 h-6" />
+          <div className="text-textSecondary">
+            <Package className="mx-auto text-primary w-6 h-6" />
             <p className="text-xs mt-1">Tracking</p>
           </div>
-          <div className="text-gray-600">
-            <Truck className="mx-auto text-pink-600 w-6 h-6" />
+          <div className="text-textSecondary">
+            <Truck className="mx-auto text-primary w-6 h-6" />
             <p className="text-xs mt-1">Fast Delivery</p>
           </div>
-          <div className="text-gray-600">
-            <User className="mx-auto text-orange-600 w-6 h-6" />
+          <div className="text-textSecondary">
+            <User className="mx-auto text-primary w-6 h-6" />
             <p className="text-xs mt-1">24/7 Support</p>
           </div>
         </div>

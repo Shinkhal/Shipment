@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useShipment } from '../context/ShipmentContext';
 import { useNavigate } from 'react-router-dom';
 import { getShipmentHistory } from '../services/api';
+import Loader from '../components/Loader';
 
 const ShipmentHistory = () => {
   const { user, loading: authLoading } = useAuth();
@@ -20,15 +21,15 @@ const ShipmentHistory = () => {
     dateTo: ''
   });
 
-  // Status colors matching backend status values
+  // Luxury status colors using custom color palette
   const statusColors = {
-    'Pending': 'bg-yellow-100 text-yellow-800',
-    'Processing': 'bg-blue-100 text-blue-800',
-    'Shipped': 'bg-purple-100 text-purple-800',
-    'In Transit': 'bg-indigo-100 text-indigo-800',
-    'Delivered': 'bg-green-100 text-green-800',
-    'Cancelled': 'bg-red-100 text-red-800',
-    'Returned': 'bg-gray-100 text-gray-800'
+    'Pending': 'bg-gradient-to-r from-amber-50 to-amber-100 text-amber-800 border border-amber-200',
+    'Processing': 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 border border-blue-200',
+    'Shipped': 'bg-gradient-to-r from-purple-50 to-purple-100 text-purple-800 border border-purple-200',
+    'In Transit': 'bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-800 border border-indigo-200',
+    'Delivered': 'bg-gradient-to-r from-success/10 to-success/20 text-success border border-success/20',
+    'Cancelled': 'bg-gradient-to-r from-error/10 to-error/20 text-error border border-error/20',
+    'Returned': 'bg-gradient-to-r from-textSecondary/10 to-textSecondary/20 text-textSecondary border border-textSecondary/20'
   };
 
   const fetchHistory = async (currentFilters = filters) => {
@@ -49,7 +50,7 @@ const ShipmentHistory = () => {
         }
       });
 
-      console.log('Sending filters:', cleanFilters); // Debug log
+      console.log('Sending filters:', cleanFilters);
 
       const response = await getShipmentHistory(cleanFilters, token);
 
@@ -90,7 +91,6 @@ const ShipmentHistory = () => {
     fetchHistory();
   }, [authLoading, user]);
 
-  // Separate useEffect for page changes
   useEffect(() => {
     if (authLoading || !user) return;
     if (filters.page > 1) {
@@ -101,7 +101,6 @@ const ShipmentHistory = () => {
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value, page: 1 };
     setFilters(newFilters);
-    // Debounce the API call for better UX
     setTimeout(() => {
       fetchHistory(newFilters);
     }, 300);
@@ -170,327 +169,338 @@ const ShipmentHistory = () => {
     }
   };
 
-  // Show loading spinner only when initially loading
+  // Loading state with luxury design
   if (authLoading) {
     return (
-      <div className="flex justify-center items-center min-h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-600"></div>
-        <span className="ml-3 text-gray-600">Loading...</span>
-      </div>
+      <Loader/>
     );
   }
 
-  // Show message if user is not authenticated
+  // Authentication required state
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-64">
-        <div className="text-center">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h3>
-          <p className="text-gray-600">Please log in to view your shipment history.</p>
+      <div className="min-h-screen bg-gradient-to-br from-background via-surface to-background flex justify-center items-center">
+        <div className="text-center bg-surface p-12 rounded-2xl shadow-card border border-border">
+          <div className="w-20 h-20 bg-gradient-to-br from-accent/20 to-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <span className="text-3xl">🔐</span>
+          </div>
+          <h3 className="text-2xl font-bold text-textPrimary mb-3">Authentication Required</h3>
+          <p className="text-textSecondary text-lg">Please log in to access your shipment history.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Shipment History</h1>
-          <p className="text-gray-600 mt-1">View your completed shipments</p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-surface to-background">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Header Section */}
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-textPrimary to-textSecondary bg-clip-text text-transparent mb-2">
+              Shipment History
+            </h1>
+            <p className="text-textSecondary text-lg font-medium">Track your logistics journey</p>
+          </div>
+          {history.length > 0 && (
+            <button
+              onClick={exportToCSV}
+              className="group relative px-6 py-3 bg-gradient-to-r from-success to-success/80 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xl">📊</span>
+                <span>Export CSV</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-success/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+          )}
         </div>
-        {history.length > 0 && (
-          <button
-            onClick={exportToCSV}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
-          >
-            <span>📊</span>
-            Export CSV
-          </button>
+
+        {/* Filters Section */}
+        <div className="bg-surface/80 backdrop-blur-sm border border-border rounded-2xl p-6 mb-8 shadow-card">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-textPrimary">Status</label>
+              <select
+                value={filters.status}
+                onChange={(e) => handleFilterChange('status', e.target.value)}
+                className="w-full p-3 border border-border rounded-xl bg-surface text-textPrimary focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-200"
+              >
+                <option value="">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="In Transit">In Transit</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Returned">Returned</option>
+              </select>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-textPrimary">From Date</label>
+              <input
+                type="date"
+                value={filters.dateFrom}
+                onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+                className="w-full p-3 border border-border rounded-xl bg-surface text-textPrimary focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-200"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-textPrimary">To Date</label>
+              <input
+                type="date"
+                value={filters.dateTo}
+                onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+                className="w-full p-3 border border-border rounded-xl bg-surface text-textPrimary focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-200"
+              />
+            </div>
+            
+            <div className="flex items-end">
+              <button
+                onClick={clearFilters}
+                className="w-full px-4 py-3 bg-gradient-to-r from-textSecondary/10 to-textSecondary/5 text-textSecondary rounded-xl font-medium hover:from-textSecondary/20 hover:to-textSecondary/10 transition-all duration-200 border border-border"
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Active Filters Display */}
+        {(filters.status || filters.dateFrom || filters.dateTo) && (
+          <div className="bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 rounded-xl p-4 mb-8">
+            <div className="flex items-center flex-wrap gap-3 text-sm">
+              <span className="text-textPrimary font-semibold">Active Filters:</span>
+              {filters.status && (
+                <span className="bg-accent/20 text-accent px-3 py-1 rounded-lg font-medium">
+                  Status: {filters.status}
+                </span>
+              )}
+              {filters.dateFrom && (
+                <span className="bg-accent/20 text-accent px-3 py-1 rounded-lg font-medium">
+                  From: {new Date(filters.dateFrom).toLocaleDateString()}
+                </span>
+              )}
+              {filters.dateTo && (
+                <span className="bg-accent/20 text-accent px-3 py-1 rounded-lg font-medium">
+                  To: {new Date(filters.dateTo).toLocaleDateString()}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-gradient-to-r from-error/10 to-error/5 border border-error/20 rounded-xl p-6 mb-8">
+            <div className="text-error text-center">
+              <h3 className="font-bold text-lg mb-2">Something went wrong</h3>
+              <p className="mb-4">{error}</p>
+              <button 
+                onClick={() => fetchHistory()}
+                className="px-6 py-2 bg-error text-white rounded-xl font-medium hover:bg-error/90 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Loading Indicator */}
+        {loading && (
+          <Loader />
+        )}
+
+        {/* No Data State */}
+        {!loading && history.length === 0 && !error && (
+          <div className="text-center py-20 bg-surface/50 rounded-2xl border border-border shadow-card">
+            <div className="w-24 h-24 bg-gradient-to-br from-accent/20 to-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <span className="text-4xl">📋</span>
+            </div>
+            <h3 className="text-2xl font-bold text-textPrimary mb-3">No History Found</h3>
+            <p className="text-textSecondary text-lg mb-6">
+              {filters.status || filters.dateFrom || filters.dateTo 
+                ? 'No shipments match your current filters.' 
+                : 'You haven\'t created any shipments yet.'}
+            </p>
+            {(filters.status || filters.dateFrom || filters.dateTo) && (
+              <button
+                onClick={clearFilters}
+                className="px-6 py-3 bg-gradient-to-r from-accent to-accent/80 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Data Table */}
+        {!loading && history.length > 0 && (
+          <>
+            <div className="bg-surface/80 backdrop-blur-sm border border-border rounded-2xl overflow-hidden shadow-card">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-gradient-to-r from-primary/5 to-primary/10">
+                    <tr>
+                      <th className="px-8 py-4 text-left text-xs font-bold text-textPrimary uppercase tracking-wider">
+                        Shipment Details
+                      </th>
+                      <th className="px-8 py-4 text-left text-xs font-bold text-textPrimary uppercase tracking-wider">
+                        Route
+                      </th>
+                      <th className="px-8 py-4 text-left text-xs font-bold text-textPrimary uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-8 py-4 text-left text-xs font-bold text-textPrimary uppercase tracking-wider">
+                        Package Info
+                      </th>
+                      <th className="px-8 py-4 text-left text-xs font-bold text-textPrimary uppercase tracking-wider">
+                        Dates
+                      </th>
+                      <th className="px-8 py-4 text-left text-xs font-bold text-textPrimary uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-surface/50 divide-y divide-border">
+                    {history.map((shipment) => (
+                      <tr key={shipment.id} className="hover:bg-gradient-to-r hover:from-accent/5 hover:to-transparent transition-all duration-200">
+                        <td className="px-8 py-6 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-bold text-textPrimary">
+                              #{shipment.id?.slice(-8) || 'N/A'}
+                            </div>
+                            <div className="text-sm text-textSecondary font-medium">
+                              {shipment.trackingId || 'N/A'}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 whitespace-nowrap">
+                          <div className="text-sm text-textPrimary">
+                            <div className="font-semibold mb-1">📍 {shipment.pickup?.city || 'Unknown'}</div>
+                            <div className="text-accent text-center text-lg">↓</div>
+                            <div className="font-semibold mb-2">🎯 {shipment.delivery?.city || 'Unknown'}</div>
+                          </div>
+                          <div className="text-xs text-textSecondary space-y-1">
+                            <div>From: {shipment.sender?.name || 'N/A'}</div>
+                            <div>To: {shipment.receiver?.name || 'N/A'}</div>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-xl text-xs font-semibold ${
+                            statusColors[shipment.status] || 'bg-gradient-to-r from-textSecondary/10 to-textSecondary/5 text-textSecondary border border-textSecondary/20'
+                          }`}>
+                             {shipment.status || 'Unknown'}
+                          </span>
+                        </td>
+                        <td className="px-8 py-6 whitespace-nowrap text-sm text-textPrimary">
+                          <div className="space-y-1">
+                            <div className="font-semibold">⚖️ {shipment.package?.weight ? `${shipment.package.weight} kg` : 'N/A'}</div>
+                            <div className="text-xs text-textSecondary">
+                              {shipment.package?.description ? 
+                                (shipment.package.description.length > 30 ? 
+                                  shipment.package.description.substring(0, 30) + '...' : 
+                                  shipment.package.description) : 
+                                'No description'}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 whitespace-nowrap text-sm text-textSecondary">
+                          <div className="space-y-1">
+                            <div>📅 {formatDate(shipment.createdAt)}</div>
+                            {shipment.estimatedDelivery && (
+                              <div>📍 {formatDate(shipment.estimatedDelivery)}</div>
+                            )}
+                            {shipment.deliveredAt && (
+                              <div className="font-semibold text-success">
+                                ✅ {formatDate(shipment.deliveredAt)}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 whitespace-nowrap text-sm">
+                          <button 
+                            className="group relative px-4 py-2 bg-gradient-to-r from-accent/10 to-accent/5 text-accent rounded-lg font-medium hover:from-accent/20 hover:to-accent/10 transition-all duration-200 border border-accent/20"
+                            onClick={() => {
+                              setSelectedShipment(shipment);
+                              navigate('/details');
+                            }}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span>👁️</span>
+                              View Details
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+              <div className="flex items-center justify-between mt-8 bg-surface/50 rounded-xl p-6 border border-border">
+                <div className="text-sm text-textSecondary font-medium">
+                  Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to{' '}
+                  {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{' '}
+                  {pagination.totalItems} results
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handlePageChange(pagination.currentPage - 1)}
+                    disabled={pagination.currentPage === 1 || loading}
+                    className="px-4 py-2 text-sm bg-surface border border-border rounded-lg hover:bg-accent/10 hover:border-accent/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
+                  >
+                    Previous
+                  </button>
+                  
+                  {[...Array(pagination.totalPages)].map((_, index) => {
+                    const page = index + 1;
+                    if (
+                      page === 1 ||
+                      page === pagination.totalPages ||
+                      (page >= pagination.currentPage - 2 && page <= pagination.currentPage + 2)
+                    ) {
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          disabled={loading}
+                          className={`px-4 py-2 text-sm rounded-lg font-medium transition-all duration-200 ${
+                            page === pagination.currentPage
+                              ? 'bg-gradient-to-r from-accent to-accent/80 text-white shadow-lg'
+                              : 'bg-surface border border-border hover:bg-accent/10 hover:border-accent/20'
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    } else if (
+                      page === pagination.currentPage - 3 ||
+                      page === pagination.currentPage + 3
+                    ) {
+                      return <span key={page} className="px-2 py-2 text-sm text-textSecondary">...</span>;
+                    }
+                    return null;
+                  })}
+                  
+                  <button
+                    onClick={() => handlePageChange(pagination.currentPage + 1)}
+                    disabled={pagination.currentPage === pagination.totalPages || loading}
+                    className="px-4 py-2 text-sm bg-surface border border-border rounded-lg hover:bg-accent/10 hover:border-accent/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
-
-      {/* Filters */}
-      <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <select
-              value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">All Statuses</option>
-              <option value="Pending">Pending</option>
-              <option value="Processing">Processing</option>
-              <option value="Shipped">Shipped</option>
-              <option value="In Transit">In Transit</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Cancelled">Cancelled</option>
-              <option value="Returned">Returned</option>
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
-            <input
-              type="date"
-              value={filters.dateFrom}
-              onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
-            <input
-              type="date"
-              value={filters.dateTo}
-              onChange={(e) => handleFilterChange('dateTo', e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          
-          <div className="flex items-end">
-            <button
-              onClick={clearFilters}
-              className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Active Filters Display */}
-      {(filters.status || filters.dateFrom || filters.dateTo) && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-blue-800 font-medium">Active Filters:</span>
-            {filters.status && (
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                Status: {filters.status}
-              </span>
-            )}
-            {filters.dateFrom && (
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                From: {new Date(filters.dateFrom).toLocaleDateString()}
-              </span>
-            )}
-            {filters.dateTo && (
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                To: {new Date(filters.dateTo).toLocaleDateString()}
-              </span>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Error Display */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <div className="text-red-800 text-center">
-            <h3 className="font-semibold">Error</h3>
-            <p className="mt-1">{error}</p>
-            <button 
-              onClick={() => fetchHistory()}
-              className="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Loading Indicator */}
-      {loading && (
-        <div className="flex justify-center items-center min-h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-600"></div>
-          <span className="ml-3 text-gray-600">Loading shipment history...</span>
-        </div>
-      )}
-
-      {/* No Data State */}
-      {!loading && history.length === 0 && !error && (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">📋</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No History Found</h3>
-          <p className="text-gray-600">
-            {filters.status || filters.dateFrom || filters.dateTo 
-              ? 'No shipments match your current filters.' 
-              : 'You haven\'t created any shipments yet.'}
-          </p>
-          {(filters.status || filters.dateFrom || filters.dateTo) && (
-            <button
-              onClick={clearFilters}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Clear Filters
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Data Table */}
-      {!loading && history.length > 0 && (
-        <>
-          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Shipment Details
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Route
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Package Info
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Dates
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {history.map((shipment) => (
-                    <tr key={shipment.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            #{shipment.id?.slice(-8) || 'N/A'}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            Tracking: {shipment.trackingId || 'N/A'}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          <div className="font-medium">From: {shipment.pickup?.city || 'Unknown'}</div>
-                          <div className="text-gray-500 text-center">↓</div>
-                          <div className="font-medium">To: {shipment.delivery?.city || 'Unknown'}</div>
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          <div>Sender: {shipment.sender?.name || 'N/A'}</div>
-                          <div>Receiver: {shipment.receiver?.name || 'N/A'}</div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          statusColors[shipment.status] || 'bg-gray-100 text-gray-800'
-                        }`}>
-                           {shipment.status || 'Unknown'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div>
-                          <div>Weight: {shipment.package?.weight ? `${shipment.package.weight} kg` : 'N/A'}</div>
-                          <div className="text-xs text-gray-500">
-                            {shipment.package?.description ? 
-                              (shipment.package.description.length > 30 ? 
-                                shipment.package.description.substring(0, 30) + '...' : 
-                                shipment.package.description) : 
-                              'No description'}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div>Created: {formatDate(shipment.createdAt)}</div>
-                        {shipment.estimatedDelivery && (
-                          <div>Est. Delivery: {formatDate(shipment.estimatedDelivery)}</div>
-                        )}
-                        {shipment.deliveredAt && (
-                          <div className="font-medium text-green-600">
-                            Completed: {formatDate(shipment.deliveredAt)}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button 
-                          className="text-blue-600 hover:text-blue-900 mr-3"
-                          onClick={() => {
-                            setSelectedShipment(shipment);
-                            navigate('/details');
-                          }}
-                        >
-                          View Details
-                        </button>
-                        
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Pagination */}
-          {pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6">
-              <div className="text-sm text-gray-700">
-                Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to{' '}
-                {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{' '}
-                {pagination.totalItems} results
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handlePageChange(pagination.currentPage - 1)}
-                  disabled={pagination.currentPage === 1 || loading}
-                  className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
-                
-                {[...Array(pagination.totalPages)].map((_, index) => {
-                  const page = index + 1;
-                  if (
-                    page === 1 ||
-                    page === pagination.totalPages ||
-                    (page >= pagination.currentPage - 2 && page <= pagination.currentPage + 2)
-                  ) {
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => handlePageChange(page)}
-                        disabled={loading}
-                        className={`px-3 py-2 text-sm rounded-md ${
-                          page === pagination.currentPage
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white border border-gray-300 hover:bg-gray-50'
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
-                      >
-                        {page}
-                      </button>
-                    );
-                  } else if (
-                    page === pagination.currentPage - 3 ||
-                    page === pagination.currentPage + 3
-                  ) {
-                    return <span key={page} className="px-2 py-2 text-sm text-gray-500">...</span>;
-                  }
-                  return null;
-                })}
-                
-                <button
-                  onClick={() => handlePageChange(pagination.currentPage + 1)}
-                  disabled={pagination.currentPage === pagination.totalPages || loading}
-                  className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
-        </>
-      )}
     </div>
   );
 };

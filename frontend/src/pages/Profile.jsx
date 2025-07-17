@@ -198,8 +198,11 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="relative">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-border border-t-accent"></div>
+          <div className="absolute inset-0 bg-surface/20 backdrop-blur-sm rounded-full animate-pulse"></div>
+        </div>
       </div>
     );
   }
@@ -210,31 +213,34 @@ const Profile = () => {
   ];
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-purple-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-full bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="text-center mb-6">
-                <div className="w-20 h-20 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-2xl mx-auto mb-4">
+            <div className="bg-surface/80 backdrop-blur-xl rounded-2xl shadow-card border border-border/20 p-8 relative overflow-hidden">
+              {/* Subtle accent background */}
+              <div className="absolute -top-20 -right-20 w-32 h-32 bg-accent/5 rounded-full blur-2xl"></div>
+              
+              <div className="text-center mb-8 relative z-10">
+                <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary/80 text-accent rounded-2xl flex items-center justify-center font-bold text-2xl mx-auto mb-6 shadow-lg border border-accent/10">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900">{user.name}</h2>
-                <p className="text-gray-600 text-sm">{user.email}</p>
+                <h2 className="text-xl font-semibold text-textPrimary mb-2">{user.name}</h2>
+                <p className="text-textSecondary text-sm font-medium">{user.email}</p>
               </div>
               
-              <nav className="space-y-2">
+              <nav className="space-y-3">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                      className={`w-full flex items-center space-x-3 px-5 py-4 rounded-xl transition-all duration-300 font-medium ${
                         activeTab === tab.id
-                          ? 'bg-purple-100 text-purple-700'
-                          : 'text-gray-600 hover:bg-gray-100'
+                          ? 'bg-accent/10 text-primary border border-accent/20 shadow-sm'
+                          : 'text-textSecondary hover:bg-surface/50 hover:text-textPrimary border border-transparent'
                       }`}
                     >
                       <Icon className="w-5 h-5" />
@@ -249,33 +255,39 @@ const Profile = () => {
           {/* Main Content */}
           <div className="lg:col-span-3">
             {activeTab === 'profile' && (
-              <div className="bg-white rounded-xl shadow-lg p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Personal Information</h2>
+              <div className="bg-surface/80 backdrop-blur-xl rounded-2xl shadow-card border border-border/20 p-10 relative overflow-hidden">
+                {/* Subtle accent background */}
+                <div className="absolute -top-32 -right-32 w-64 h-64 bg-accent/3 rounded-full blur-3xl"></div>
+                
+                <div className="flex items-center justify-between mb-8 relative z-10">
+                  <div>
+                    <h2 className="text-2xl font-bold text-textPrimary mb-2">Personal Information</h2>
+                    <p className="text-textSecondary">Manage your profile details and preferences</p>
+                  </div>
                   {!isEditing ? (
                     <button
                       onClick={handleEdit}
-                      className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+                      className="group flex items-center space-x-2 bg-primary hover:bg-primary/90 text-accent px-6 py-3 rounded-xl transition-all duration-300 font-medium shadow-lg hover:shadow-xl border border-accent/10"
                     >
-                      <Edit3 className="w-4 h-4" />
-                      <span>Edit</span>
+                      <Edit3 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                      <span>Edit Profile</span>
                     </button>
                   ) : (
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-3">
                       <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg transition-colors"
+                        className="group flex items-center space-x-2 bg-success hover:bg-success/90 disabled:bg-success/50 text-surface px-6 py-3 rounded-xl transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
                       >
-                        <Save className="w-4 h-4" />
-                        <span>{isSaving ? 'Saving...' : 'Save'}</span>
+                        <Save className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
                       </button>
                       <button
                         onClick={handleCancel}
                         disabled={isSaving}
-                        className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors"
+                        className="group flex items-center space-x-2 bg-surface hover:bg-background disabled:bg-surface/50 text-textSecondary border border-border px-6 py-3 rounded-xl transition-all duration-300 font-medium shadow-sm"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-4 h-4 group-hover:scale-110 transition-transform" />
                         <span>Cancel</span>
                       </button>
                     </div>
@@ -283,15 +295,15 @@ const Profile = () => {
                 </div>
 
                 {error && (
-                  <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-                    {error}
+                  <div className="mb-6 p-4 bg-error/10 border border-error/20 text-error rounded-xl backdrop-blur-sm">
+                    <p className="font-medium">{error}</p>
                   </div>
                 )}
 
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <User className="w-4 h-4 inline mr-2" />
+                <div className="space-y-8 relative z-10">
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-textPrimary mb-3">
+                      <User className="w-4 h-4 inline mr-2 text-accent" />
                       Full Name
                     </label>
                     {isEditing ? (
@@ -299,27 +311,32 @@ const Profile = () => {
                         type="text"
                         value={editForm.name}
                         onChange={(e) => handleInputChange('name', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-4 bg-surface/80 border border-border/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 text-textPrimary placeholder-textSecondary/60 transition-all duration-300 backdrop-blur-sm"
                         disabled={isSaving}
                         required
+                        placeholder="Enter your full name"
                       />
                     ) : (
-                      <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{user.name}</p>
+                      <div className="text-textPrimary bg-background/50 px-4 py-4 rounded-xl border border-border/20 font-medium">
+                        {user.name}
+                      </div>
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <Mail className="w-4 h-4 inline mr-2" />
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-textPrimary mb-3">
+                      <Mail className="w-4 h-4 inline mr-2 text-accent" />
                       Email Address
                     </label>
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{user.email}</p>
-                    <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                    <div className="text-textPrimary bg-background/50 px-4 py-4 rounded-xl border border-border/20 font-medium">
+                      {user.email}
+                    </div>
+                    <p className="text-xs text-textSecondary mt-2 ml-1">Email address cannot be modified</p>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <Phone className="w-4 h-4 inline mr-2" />
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-textPrimary mb-3">
+                      <Phone className="w-4 h-4 inline mr-2 text-accent" />
                       Phone Number
                     </label>
                     {isEditing ? (
@@ -327,14 +344,16 @@ const Profile = () => {
                         type="tel"
                         value={editForm.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        placeholder="Enter phone number"
+                        className="w-full px-4 py-4 bg-surface/80 border border-border/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 text-textPrimary placeholder-textSecondary/60 transition-all duration-300 backdrop-blur-sm"
+                        placeholder="Enter your phone number"
                         disabled={isSaving}
                       />
                     ) : (
-                      <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">
-                        {user.phone || 'Not provided'}
-                      </p>
+                      <div className="text-textPrimary bg-background/50 px-4 py-4 rounded-xl border border-border/20 font-medium">
+                        {user.phone || (
+                          <span className="text-textSecondary italic">No phone number provided</span>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -342,23 +361,34 @@ const Profile = () => {
             )}
 
             {activeTab === 'settings' && (
-              <div className="bg-white rounded-xl shadow-lg p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Account Settings</h2>
+              <div className="bg-surface/80 backdrop-blur-xl rounded-2xl shadow-card border border-border/20 p-10 relative overflow-hidden">
+                {/* Subtle accent background */}
+                <div className="absolute -top-32 -left-32 w-64 h-64 bg-accent/3 rounded-full blur-3xl"></div>
                 
-                <div className="space-y-4">
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Account Actions</h3>
-                    <button 
-                      onClick={handleSignOut}
-                      className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
-                    >
-                      Sign Out
-                    </button>
+                <div className="relative z-10">
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-textPrimary mb-2">Account Settings</h2>
+                    <p className="text-textSecondary">Manage your account preferences and security</p>
                   </div>
                   
-                  <div className="text-center py-8">
-                    <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500">Additional settings will be added in future updates</p>
+                  <div className="space-y-6">
+                    <div className="border-b border-border/20 pb-6">
+                      <h3 className="text-lg font-semibold text-textPrimary mb-4">Account Actions</h3>
+                      <button 
+                        onClick={handleSignOut}
+                        className="group bg-red-600 hover:bg-red-700 text-gray-200 border border-error/20 px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-sm hover:shadow-md"
+                      >
+                        <span className="group-hover:scale-105 transition-transform inline-block">Sign Out</span>
+                      </button>
+                    </div>
+                    
+                    <div className="text-center py-12 border border-spacing-x-10" >
+                      <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Shield className="w-8 h-8 text-accent" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-textPrimary mb-2">More Settings Coming Soon</h3>
+                      <p className="text-textSecondary">Additional security and preference options will be available in future updates</p>
+                    </div>
                   </div>
                 </div>
               </div>
