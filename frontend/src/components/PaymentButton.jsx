@@ -160,22 +160,23 @@ const PaymentButton = ({ rateData, formData, disabled = false }) => {
 
   return (
     <button
-      onClick={handlePayment}
-      disabled={confirming || disabled || !rateData}
-      className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:bg-purple-400 transition-colors"
-    >
-      {confirming ? (
-        <>
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-          <span>Processing Payment...</span>
-        </>
-      ) : (
-        <>
-          <CheckCircle className="w-5 h-5" />
-          <span>Pay ₹{rateData?.breakdown?.total || 0} & Confirm Shipment</span>
-        </>
-      )}
-    </button>
+  onClick={handlePayment}
+  disabled={confirming || disabled || !rateData}
+  className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-primary text-white rounded-lg font-semibold hover:brightness-90 disabled:opacity-60 transition-all shadow-md"
+>
+  {confirming ? (
+    <>
+      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white/80"></div>
+      <span>Processing Payment...</span>
+    </>
+  ) : (
+    <>
+      <CheckCircle className="w-5 h-5" />
+      <span>Pay ₹{rateData?.breakdown?.total || 0} & Confirm Shipment</span>
+    </>
+  )}
+</button>
+
   );
 };
 

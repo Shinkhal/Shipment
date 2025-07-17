@@ -27,16 +27,16 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-gray-50 border-t border-gray-200">
+    <footer className="bg-surface/80 backdrop-blur-xl border-t border-accent/20 shadow-card">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           
           {/* Brand */}
           <div className="flex items-center">
-            <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg mr-2 shadow-sm">
-              <Truck className="w-5 h-5 text-white" />
+            <div className="inline-flex items-center justify-center w-8 h-8 bg-primary rounded-lg mr-2 shadow-lg border border-accent/20">
+              <Truck className="w-5 h-5 text-accent" />
             </div>
-            <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="text-lg font-bold text-primary">
               ShipNest
             </span>
           </div>
@@ -47,7 +47,7 @@ const Footer = () => {
               <button
                 key={link.name}
                 onClick={() => navigate(link.path)}
-                className="text-sm text-gray-600 hover:text-purple-600 transition-colors duration-200"
+                className="text-sm text-textSecondary hover:bg-accent/10 transition-all duration-300 px-3 py-1.5 rounded-lg border border-transparent hover:border-accent/20 backdrop-blur-sm"
               >
                 {link.name}
               </button>
@@ -65,7 +65,7 @@ const Footer = () => {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-purple-600 transition-colors duration-200"
+                    className="w-7 h-7 flex items-center justify-center text-textSecondary hover:bg-accent/10 transition-all duration-300 rounded-lg border border-transparent hover:border-accent/20 backdrop-blur-sm"
                     aria-label={social.label}
                   >
                     <Icon className="w-4 h-4" />
@@ -73,14 +73,14 @@ const Footer = () => {
                 );
               })}
             </div>
-            <div className="text-sm text-gray-500 hidden sm:block">
+            <div className="text-sm text-textSecondary hidden sm:block">
               © {currentYear} ShipNest
             </div>
           </div>
         </div>
         
         {/* Mobile Copyright */}
-        <div className="text-center text-sm text-gray-500 mt-4 sm:hidden">
+        <div className="text-center text-sm text-textSecondary mt-4 sm:hidden">
           © {currentYear} ShipNest. All rights reserved.
         </div>
       </div>
