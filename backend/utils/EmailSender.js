@@ -14,14 +14,13 @@ const sendEmail = async ({ to, subject, text, html }) => {
   }
 
   const transporter = nodemailer.createTransport({
-    host: 'smtp-relay.brevo.com',
+    service: 'gmail',
+    host: 'smtp.gmail.com',
     port: 587,
-    secure: false,
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS,
     },
-    debug: true,
   });
 
   const mailOptions = {
