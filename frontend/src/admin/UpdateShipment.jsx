@@ -63,15 +63,15 @@ const UpdateShipment = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      'Delivered': 'bg-green-100 text-green-800 border-green-200',
-      'In Transit': 'bg-blue-100 text-blue-800 border-blue-200',
-      'Processing': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      'Cancelled': 'bg-red-100 text-red-800 border-red-200',
-      'Pending': 'bg-gray-100 text-gray-800 border-gray-200',
-      'Returned': 'bg-purple-100 text-purple-800 border-purple-200',
-      'Shipped': 'bg-indigo-100 text-indigo-800 border-indigo-200'
+      'Delivered': 'bg-success/20 text-success border-success/30',
+      'In Transit': 'bg-blue-100 text-blue-700 border-blue-200',
+      'Processing': 'bg-accent/20 text-accent border-accent/30',
+      'Cancelled': 'bg-error/20 text-error border-error/30',
+      'Pending': 'bg-textSecondary/20 text-textSecondary border-textSecondary/30',
+      'Returned': 'bg-purple-100 text-purple-700 border-purple-200',
+      'Shipped': 'bg-primary/20 text-primary border-primary/30'
     };
-    return colors[status] || 'bg-gray-100 text-gray-800 border-gray-200';
+    return colors[status] || 'bg-textSecondary/20 text-textSecondary border-textSecondary/30';
   };
 
   const formatDate = (timestamp) => {
@@ -93,393 +93,396 @@ const UpdateShipment = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading shipment details...</p>
+      <AdminLayout>
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-textSecondary">Loading shipment details...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   if (!shipment) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Shipment Not Found</h2>
-          <p className="text-gray-600 mb-4">The requested shipment could not be found.</p>
+      <AdminLayout>
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-textPrimary mb-2">Shipment Not Found</h2>
+            <p className="text-textSecondary mb-4">The requested shipment could not be found.</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
     <AdminLayout>
-
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6">
-            <div className="flex items-center">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Update Shipment</h1>
-                <p className="text-gray-600 mt-1">Tracking ID: {shipment.trackingId}</p>
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <div className="bg-surface shadow-card border-b border-border mb-6">
+          <div className="px-6 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div>
+                  <h1 className="text-3xl font-bold text-textPrimary">Update Shipment</h1>
+                  <p className="text-textSecondary mt-1">Tracking ID: {shipment.trackingId}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className={`inline-flex px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(shipment.status)}`}>
-                {shipment.status}
-              </span>
+              <div className="flex items-center space-x-2">
+                <span className={`inline-flex px-4 py-2 rounded-xl text-sm font-medium border ${getStatusColor(shipment.status)}`}>
+                  {shipment.status}
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Shipment Details */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Basic Information */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                <Package className="w-5 h-5 mr-2 text-indigo-600" />
-                Shipment Information
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tracking ID</label>
-                  <p className="text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded-lg">
-                    {shipment.trackingId}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Current Status</label>
-                  <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(shipment.status)}`}>
-                    {shipment.status}
-                  </span>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Created Date</label>
-                  <p className="text-gray-900 flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                    {formatDate(shipment.createdAt)}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Delivery</label>
-                  <p className="text-gray-900 flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                    {formatDate(shipment.estimatedDelivery)}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Sender & Receiver Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Sender Details */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <User className="w-5 h-5 mr-2 text-blue-600" />
-                  Sender Details
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                    <p className="text-gray-900 flex items-center">
-                      <User className="w-4 h-4 mr-2 text-gray-400" />
-                      {shipment.sender?.name || 'N/A'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                    <p className="text-gray-900 flex items-center">
-                      <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                      {shipment.sender?.email || 'N/A'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                    <p className="text-gray-900 flex items-center">
-                      <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                      {shipment.sender?.phone || 'N/A'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Receiver Details */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <User className="w-5 h-5 mr-2 text-green-600" />
-                  Receiver Details
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                    <p className="text-gray-900 flex items-center">
-                      <User className="w-4 h-4 mr-2 text-gray-400" />
-                      {shipment.receiver?.name || 'N/A'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                    <p className="text-gray-900 flex items-center">
-                      <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                      {shipment.receiver?.email || 'N/A'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                    <p className="text-gray-900 flex items-center">
-                      <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                      {shipment.receiver?.phone || 'N/A'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Pickup & Delivery Addresses */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Pickup Address */}
-              {shipment.pickup && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <MapPin className="w-5 h-5 mr-2 text-indigo-600" />
-                    Pickup Address
-                  </h2>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-900 leading-relaxed">
-                      {formatAddress(shipment.pickup)}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Delivery Address */}
-              {shipment.delivery && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <MapPin className="w-5 h-5 mr-2 text-green-600" />
-                    Delivery Address
-                  </h2>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-900 leading-relaxed">
-                      {formatAddress(shipment.delivery)}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Package Information */}
-            {shipment.package && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <Package className="w-5 h-5 mr-2 text-indigo-600" />
-                  Package Information
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <p className="text-gray-900">{shipment.package.description || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Weight</label>
-                    <p className="text-gray-900 flex items-center">
-                      <Weight className="w-4 h-4 mr-2 text-gray-400" />
-                      {shipment.package.weight || 0} kg
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <p className="text-gray-900 flex items-center">
-                      <Tag className="w-4 h-4 mr-2 text-gray-400" />
-                      {shipment.package.category || 'Others'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Service Information */}
-            {shipment.service && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <Truck className="w-5 h-5 mr-2 text-indigo-600" />
-                  Service Information
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
-                    <p className="text-gray-900">{shipment.service.type || 'Standard'}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Pickup Date</label>
-                    <p className="text-gray-900 flex items-center">
-                      <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                      {shipment.service.pickupDate ? new Date(shipment.service.pickupDate).toLocaleDateString('en-IN') : 'N/A'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Time</label>
-                    <p className="text-gray-900 flex items-center">
-                      <Clock className="w-4 h-4 mr-2 text-gray-400" />
-                      {shipment.service.preferredTime || 'Anytime'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Payment Information */}
-            {shipment.payment && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <CreditCard className="w-5 h-5 mr-2 text-indigo-600" />
-                  Payment Information
+        <div className="px-6 pb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Shipment Details */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Basic Information */}
+              <div className="bg-surface rounded-2xl shadow-card border border-border p-6">
+                <h2 className="text-xl font-semibold text-textPrimary mb-4 flex items-center">
+                  <Package className="w-5 h-5 mr-2 text-primary" />
+                  Shipment Information
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                    <p className="text-2xl font-bold text-green-600">
-                      ₹{(shipment.payment.amount || 0).toLocaleString()}
+                    <label className="block text-sm font-medium text-textSecondary mb-1">Tracking ID</label>
+                    <p className="text-textPrimary font-mono bg-background px-3 py-2 rounded-xl">
+                      {shipment.trackingId}
                     </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
-                    <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
-                      shipment.payment.status === 'Paid' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {shipment.payment.status || 'Pending'}
+                    <label className="block text-sm font-medium text-textSecondary mb-1">Current Status</label>
+                    <span className={`inline-flex px-3 py-1 rounded-xl text-sm font-medium ${getStatusColor(shipment.status)}`}>
+                      {shipment.status}
                     </span>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-                    <p className="text-gray-900">{shipment.payment.method || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Transaction ID</label>
-                    <p className="text-gray-900 font-mono text-sm bg-gray-50 px-2 py-1 rounded">
-                      {shipment.payment.transactionId || 'N/A'}
+                    <label className="block text-sm font-medium text-textSecondary mb-1">Created Date</label>
+                    <p className="text-textPrimary flex items-center">
+                      <Calendar className="w-4 h-4 mr-2 text-textSecondary" />
+                      {formatDate(shipment.createdAt)}
                     </p>
                   </div>
-                  {shipment.payment.paidAt && (
-                      <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Paid At</label>
-                      <p className="text-gray-900 flex items-center">
-                        <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                        {formatDate(shipment.payment.paidAt)}
+                  <div>
+                    <label className="block text-sm font-medium text-textSecondary mb-1">Estimated Delivery</label>
+                    <p className="text-textPrimary flex items-center">
+                      <Calendar className="w-4 h-4 mr-2 text-textSecondary" />
+                      {formatDate(shipment.estimatedDelivery)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sender & Receiver Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Sender Details */}
+                <div className="bg-surface rounded-2xl shadow-card border border-border p-6">
+                  <h2 className="text-lg font-semibold text-textPrimary mb-4 flex items-center">
+                    <User className="w-5 h-5 mr-2 text-primary" />
+                    Sender Details
+                  </h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Full Name</label>
+                      <p className="text-textPrimary flex items-center">
+                        <User className="w-4 h-4 mr-2 text-textSecondary" />
+                        {shipment.sender?.name || 'N/A'}
                       </p>
                     </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Status History */}
-            {shipment.statusHistory && shipment.statusHistory.length > 0 && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <Clock className="w-5 h-5 mr-2 text-indigo-600" />
-                  Status History
-                </h2>
-                <div className="space-y-4">
-                  {shipment.statusHistory.map((history, index) => (
-                    <div key={index} className="border-l-4 border-indigo-200 pl-4 pb-4">
-                      <div className="flex items-center justify-between">
-                        <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(history.status)}`}>
-                          {history.status}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {formatDate(history.timestamp)}
-                        </span>
-                      </div>
-                      {history.description && (
-                        <p className="text-gray-600 mt-2 text-sm">{history.description}</p>
-                      )}
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Email Address</label>
+                      <p className="text-textPrimary flex items-center">
+                        <Mail className="w-4 h-4 mr-2 text-textSecondary" />
+                        {shipment.sender?.email || 'N/A'}
+                      </p>
                     </div>
-                  ))}
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Phone Number</label>
+                      <p className="text-textPrimary flex items-center">
+                        <Phone className="w-4 h-4 mr-2 text-textSecondary" />
+                        {shipment.sender?.phone || 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Receiver Details */}
+                <div className="bg-surface rounded-2xl shadow-card border border-border p-6">
+                  <h2 className="text-lg font-semibold text-textPrimary mb-4 flex items-center">
+                    <User className="w-5 h-5 mr-2 text-success" />
+                    Receiver Details
+                  </h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Full Name</label>
+                      <p className="text-textPrimary flex items-center">
+                        <User className="w-4 h-4 mr-2 text-textSecondary" />
+                        {shipment.receiver?.name || 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Email Address</label>
+                      <p className="text-textPrimary flex items-center">
+                        <Mail className="w-4 h-4 mr-2 text-textSecondary" />
+                        {shipment.receiver?.email || 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Phone Number</label>
+                      <p className="text-textPrimary flex items-center">
+                        <Phone className="w-4 h-4 mr-2 text-textSecondary" />
+                        {shipment.receiver?.phone || 'N/A'}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Update Status Panel */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                <Edit3 className="w-5 h-5 mr-2 text-indigo-600" />
-                Update Status
-              </h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select New Status
-                  </label>
-                  <select
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    value={newStatus}
-                    onChange={(e) => setNewStatus(e.target.value)}
-                  >
-                    {statuses.map(status => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Update Description (Optional)
-                  </label>
-                  <textarea
-                    placeholder="Add a note about this status update..."
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    rows={4}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </div>
-
-                <button
-                  onClick={handleUpdate}
-                  disabled={updating || newStatus === shipment.status}
-                  className={`w-full flex items-center justify-center px-4 py-3 rounded-lg font-medium transition-colors ${
-                      updating || newStatus === shipment.status
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                    }`}
-                    >
-                  {updating ? (
-                      <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Updating...
-                    </>
-                  ) : (
-                      <>
-                      <Save className="w-4 h-4 mr-2" />
-                      Update Status
-                    </>
-                  )}
-                </button>
-
-                {newStatus === shipment.status && (
-                    <p className="text-sm text-gray-500 text-center">
-                    Status is already set to "{newStatus}"
-                  </p>
+              {/* Pickup & Delivery Addresses */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Pickup Address */}
+                {shipment.pickup && (
+                  <div className="bg-surface rounded-2xl shadow-card border border-border p-6">
+                    <h2 className="text-lg font-semibold text-textPrimary mb-4 flex items-center">
+                      <MapPin className="w-5 h-5 mr-2 text-primary" />
+                      Pickup Address
+                    </h2>
+                    <div className="bg-background p-4 rounded-xl">
+                      <p className="text-textPrimary leading-relaxed">
+                        {formatAddress(shipment.pickup)}
+                      </p>
+                    </div>
+                  </div>
                 )}
+
+                {/* Delivery Address */}
+                {shipment.delivery && (
+                  <div className="bg-surface rounded-2xl shadow-card border border-border p-6">
+                    <h2 className="text-lg font-semibold text-textPrimary mb-4 flex items-center">
+                      <MapPin className="w-5 h-5 mr-2 text-success" />
+                      Delivery Address
+                    </h2>
+                    <div className="bg-background p-4 rounded-xl">
+                      <p className="text-textPrimary leading-relaxed">
+                        {formatAddress(shipment.delivery)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Package Information */}
+              {shipment.package && (
+                <div className="bg-surface rounded-2xl shadow-card border border-border p-6">
+                  <h2 className="text-xl font-semibold text-textPrimary mb-4 flex items-center">
+                    <Package className="w-5 h-5 mr-2 text-primary" />
+                    Package Information
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Description</label>
+                      <p className="text-textPrimary">{shipment.package.description || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Weight</label>
+                      <p className="text-textPrimary flex items-center">
+                        <Weight className="w-4 h-4 mr-2 text-textSecondary" />
+                        {shipment.package.weight || 0} kg
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Category</label>
+                      <p className="text-textPrimary flex items-center">
+                        <Tag className="w-4 h-4 mr-2 text-textSecondary" />
+                        {shipment.package.category || 'Others'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Service Information */}
+              {shipment.service && (
+                <div className="bg-surface rounded-2xl shadow-card border border-border p-6">
+                  <h2 className="text-xl font-semibold text-textPrimary mb-4 flex items-center">
+                    <Truck className="w-5 h-5 mr-2 text-primary" />
+                    Service Information
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Service Type</label>
+                      <p className="text-textPrimary">{shipment.service.type || 'Standard'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Pickup Date</label>
+                      <p className="text-textPrimary flex items-center">
+                        <Calendar className="w-4 h-4 mr-2 text-textSecondary" />
+                        {shipment.service.pickupDate ? new Date(shipment.service.pickupDate).toLocaleDateString('en-IN') : 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Preferred Time</label>
+                      <p className="text-textPrimary flex items-center">
+                        <Clock className="w-4 h-4 mr-2 text-textSecondary" />
+                        {shipment.service.preferredTime || 'Anytime'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Payment Information */}
+              {shipment.payment && (
+                <div className="bg-surface rounded-2xl shadow-card border border-border p-6">
+                  <h2 className="text-xl font-semibold text-textPrimary mb-4 flex items-center">
+                    <CreditCard className="w-5 h-5 mr-2 text-primary" />
+                    Payment Information
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Amount</label>
+                      <p className="text-2xl font-bold text-success">
+                        ₹{(shipment.payment.amount || 0).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Payment Status</label>
+                      <span className={`inline-flex px-3 py-1 rounded-xl text-sm font-medium ${
+                        shipment.payment.status === 'Paid' 
+                          ? 'bg-success/20 text-success' 
+                          : 'bg-accent/20 text-accent'
+                      }`}>
+                        {shipment.payment.status || 'Pending'}
+                      </span>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Payment Method</label>
+                      <p className="text-textPrimary">{shipment.payment.method || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-textSecondary mb-1">Transaction ID</label>
+                      <p className="text-textPrimary font-mono text-sm bg-background px-2 py-1 rounded-xl">
+                        {shipment.payment.transactionId || 'N/A'}
+                      </p>
+                    </div>
+                    {shipment.payment.paidAt && (
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-textSecondary mb-1">Paid At</label>
+                        <p className="text-textPrimary flex items-center">
+                          <Calendar className="w-4 h-4 mr-2 text-textSecondary" />
+                          {formatDate(shipment.payment.paidAt)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Status History */}
+              {shipment.statusHistory && shipment.statusHistory.length > 0 && (
+                <div className="bg-surface rounded-2xl shadow-card border border-border p-6">
+                  <h2 className="text-xl font-semibold text-textPrimary mb-4 flex items-center">
+                    <Clock className="w-5 h-5 mr-2 text-primary" />
+                    Status History
+                  </h2>
+                  <div className="space-y-4">
+                    {shipment.statusHistory.map((history, index) => (
+                      <div key={index} className="border-l-4 border-primary/20 pl-4 pb-4">
+                        <div className="flex items-center justify-between">
+                          <span className={`inline-flex px-3 py-1 rounded-xl text-sm font-medium ${getStatusColor(history.status)}`}>
+                            {history.status}
+                          </span>
+                          <span className="text-sm text-textSecondary">
+                            {formatDate(history.timestamp)}
+                          </span>
+                        </div>
+                        {history.description && (
+                          <p className="text-textSecondary mt-2 text-sm">{history.description}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Update Status Panel */}
+            <div className="lg:col-span-1">
+              <div className="bg-surface rounded-2xl shadow-card border border-border p-6 sticky top-8">
+                <h2 className="text-xl font-semibold text-textPrimary mb-4 flex items-center">
+                  <Edit3 className="w-5 h-5 mr-2 text-primary" />
+                  Update Status
+                </h2>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-textSecondary mb-2">
+                      Select New Status
+                    </label>
+                    <select
+                      className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-textPrimary"
+                      value={newStatus}
+                      onChange={(e) => setNewStatus(e.target.value)}
+                    >
+                      {statuses.map(status => (
+                        <option key={status} value={status}>{status}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-textSecondary mb-2">
+                      Update Description (Optional)
+                    </label>
+                    <textarea
+                      placeholder="Add a note about this status update..."
+                      className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-surface text-textPrimary"
+                      rows={4}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleUpdate}
+                    disabled={updating || newStatus === shipment.status}
+                    className={`w-full flex items-center justify-center px-4 py-3 rounded-xl font-medium transition-all ${
+                      updating || newStatus === shipment.status
+                        ? 'bg-textSecondary/20 text-textSecondary cursor-not-allowed'
+                        : 'bg-primary text-surface hover:bg-primary/90 shadow-card'
+                    }`}
+                  >
+                    {updating ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-surface mr-2"></div>
+                        Updating...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Update Status
+                      </>
+                    )}
+                  </button>
+
+                  {newStatus === shipment.status && (
+                    <p className="text-sm text-textSecondary text-center">
+                      Status is already set to "{newStatus}"
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-                      </AdminLayout>
+    </AdminLayout>
   );
 };
 
