@@ -79,9 +79,10 @@ ShipNest is a comprehensive shipment delivery and tracking platform built for bo
 
 ## 📸 Screenshots
 
-| Dashboard | All Shipments | User Homepage | History |
+| Dashboard | All Shipments | User Homepage | Active Shipments |
 |----------|---------------|---------------|---------|
-| ![image](https://github.com/user-attachments/assets/13e90622-3608-46fb-8ea9-f5a5f46a1332) | ![image](https://github.com/user-attachments/assets/4e4e0fa0-2d0a-479f-997a-0b1c3e984e1e) | ![image](https://github.com/user-attachments/assets/e0aa793f-922a-4385-b305-ac7972c37dab) | ![image](https://github.com/user-attachments/assets/1ec9c741-a3b6-46ed-8ccf-7e6d32dafbe2) |
+| <img width="1918" height="969" alt="image" src="https://github.com/user-attachments/assets/1f48a18c-86d4-4155-92f6-1e11e7db387d" /> | <img width="1919" height="970" alt="image" src="https://github.com/user-attachments/assets/46462d24-5662-4a0d-9421-e5d0d6ef0f97" />| <img width="1918" height="965" alt="image" src="https://github.com/user-attachments/assets/b4fef785-1c39-4123-90fa-c0f6baac441a" /> | <img width="1871" height="970" alt="image" src="https://github.com/user-attachments/assets/279cc7f2-6c61-4fbd-a2bb-64dd86f7f37a" />
+ |
 
 ---
 
