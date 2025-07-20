@@ -138,7 +138,7 @@ const Navbar = () => {
                   {isProfileOpen && (
                     <div
                       role="menu"
-                      className="absolute right-0 mt-2 w-56 bg-surface/95 backdrop-blur-xl rounded-2xl shadow-card border border-accent/20 py-2 z-50 animate-fade-in-down"
+                      className="absolute right-0 mt-2 w-56 bg-surface backdrop-blur-xl rounded-2xl shadow-card border border-accent/20 py-2 z-50 animate-fade-in-down"
                     >
                       <div className="px-4 py-3 border-b border-accent/20 text-sm font-medium text-textPrimary bg-accent/5">
                         {user?.name || 'User'}

@@ -88,16 +88,17 @@ function App() {
   }, []);
 
   if (!isBackendReady) {
-    return (
-      <div className="h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors">
-        <div className="text-4xl font-bold mb-4 animate-pulse">🚚 ShipNest</div>
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-lg text-center px-4">
-          Waking up servers... Preparing your shipments...
-        </p>
-      </div>
-    );
-  }
+  return (
+    <div className="h-screen flex flex-col items-center justify-center bg-background text-textPrimary transition-colors">
+      <div className="text-4xl font-bold mb-4 animate-pulse text-primary">🚚 ShipNest</div>
+      <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p className="text-lg text-center px-4 text-textSecondary">
+        Waking up servers... Preparing your shipments...
+      </p>
+    </div>
+  );
+}
+
 
   return (
     <Router>
